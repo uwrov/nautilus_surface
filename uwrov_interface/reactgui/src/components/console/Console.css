@@ -1,0 +1,15 @@
+#console {
+  bottom: 0;
+  position: absolute;
+  resize: none;
+  z-index: 100;
+}
+
+#in {
+  bottom: 0;
+  position: relative;
+  resize: none;
+}
+#outputText {
+  resize: none;
+}
