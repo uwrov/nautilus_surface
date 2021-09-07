@@ -12,6 +12,17 @@ RUN . ~/.bashrc \
   && nvm alias default $NODE_VERSION \
   && nvm use default
 
+# Create a catkin workspace
+RUN mkdir -p /root/catkin_ws/src
+
 # Copy Website Files
-WORKDIR /~
-COPY uwrov_interface uwrov_interface
+WORKDIR /root
+COPY uwrov_interface /root/catkin_ws/src/uwrov_interface
+COPY uwrov_server /root/catkin_ws/src/uwrov_server
+COPY nautilus_launch /root/catkin_ws/src/nautilus_launch
+COPY nautilus_scripts /root/catkin_ws/src/nautilus_scripts
+
+# Install node dependencies
+RUN . ~/.bashrc && . /opt/ros/melodic/setup.sh \
+    && cd catkin_ws/src/uwrov_interface \
+    && npm install
