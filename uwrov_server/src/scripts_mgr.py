@@ -27,7 +27,7 @@ from datetime import datetime
 # 	4. (Only do this in production) roscore
 # 	5. ./scripts_mgr.py or python3 scripts_mgr.py
 
-SCRIPTS_PATH = '../../src/nautilus_scripts/scripts/'
+SCRIPTS_PATH = '/root/catkin_ws/src/nautilus_scripts/scripts/'
 # SCRIPTS_PATH = './scripts'
 RUNTIME_COMMAND = 'rosrun'
 RUNTIME_PARAMS = 'nautilus_scripts'

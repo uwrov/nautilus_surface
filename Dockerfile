@@ -1,8 +1,18 @@
-FROM ros:melodic-ros-core-bionic
+# syntax=docker/dockerfile:1
+FROM ros:noetic-ros-core-focal
+
+ENV ROS_DISTRO noetic
 
 # Installing Dependencies
 RUN apt-get update && apt-get install -y \
-    git curl
+    git curl \
+    build-essential \
+    python3-pip \
+    netbase
+
+# Install python packages
+COPY requirements.txt /requirements.txt
+RUN pip3 install -r /requirements.txt
 
 # Installing Node
 ENV NODE_VERSION 14
@@ -19,10 +29,19 @@ RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root
 COPY uwrov_interface /root/catkin_ws/src/uwrov_interface
 COPY uwrov_server /root/catkin_ws/src/uwrov_server
+
+# Install node dependencies
+RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && cd catkin_ws/src/uwrov_interface \
+    && npm install
+
+# Copy ROS Packages
 COPY nautilus_launch /root/catkin_ws/src/nautilus_launch
 COPY nautilus_scripts /root/catkin_ws/src/nautilus_scripts
 
-# Install node dependencies
-RUN . ~/.bashrc && . /opt/ros/melodic/setup.sh \
-    && cd catkin_ws/src/uwrov_interface \
-    && npm install
+# Build ROS Packages
+RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && cd catkin_ws \
+    && catkin_make
+
+EXPOSE 3000

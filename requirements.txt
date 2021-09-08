@@ -1,0 +1,5 @@
+# Add any installed python packages into this list
+Flask
+flask-socketio
+opencv-python
+gevent

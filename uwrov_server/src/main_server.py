@@ -16,10 +16,10 @@ import scripts_mgr
 
 HOST_IP = "localhost"
 # HOST_IP = "0.0.0.0"
-HOST_PORT = "4040"
+HOST_PORT = 4040
 
 app = Flask(__name__)
-sio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+sio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 channel_publisher = None
 scripts_manager = None
