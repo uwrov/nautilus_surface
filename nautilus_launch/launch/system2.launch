@@ -1,0 +1,8 @@
+<launch>
+  <group ns="surface_control">
+    <!-- start server -->
+    <node name="server" pkg="uwrov_server" type="main_server.py"/>
+    <!-- start interface -->
+    <node name="interface" pkg="uwrov_interface" type="launch_interface.bash"/>
+  </group>
+</launch>

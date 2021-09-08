@@ -44,4 +44,6 @@ RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
     && cd catkin_ws \
     && catkin_make
 
+RUN echo "source /root/catkin_ws/devel/setup.bash" >> ~/.bashrc
+
 EXPOSE 3000

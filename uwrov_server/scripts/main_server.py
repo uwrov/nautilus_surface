@@ -6,9 +6,9 @@ from sensor_msgs.msg import Image, CompressedImage
 from std_msgs.msg import Int16, Empty
 import threading
 from geometry_msgs.msg import Wrench
-import image_server
-import Move_Server
-import scripts_mgr
+from servers import image_server
+from servers import Move_Server
+from servers import scripts_mgr
 
 # from engineio.payload import Payload
 # Payload.max_decode_packets = 50

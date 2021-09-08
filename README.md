@@ -27,3 +27,10 @@ docker build --tag nautilus_surface .
 ```
 docker run --name nautilus_surface -p 3000:3000 -it nautilus_surface
 ```
+
+## System commands
+
+### Run the System
+```
+
+```

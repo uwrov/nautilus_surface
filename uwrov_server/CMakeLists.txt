@@ -21,8 +21,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-# Subway car
+catkin_python_setup()
+
+# server launch
 catkin_install_python(PROGRAMS
-  src/main_server.py
+  scripts/main_server.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
