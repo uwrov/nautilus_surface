@@ -32,5 +32,5 @@ docker run --name nautilus_surface -p 3000:3000 -it nautilus_surface
 
 ### Run the System
 ```
-
+roslaunch nautilus_launch system2.launch
 ```
