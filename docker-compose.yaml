@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  surface:
+    build: ./
+    image: nautilus_surface
+    container_name: surface
+    environment:
+      - "ROS_HOSTNAME=surface"
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    networks:
+      - nautilus_network
+  sim:
+    build: https://github.com/uwrov/nautilus_sim
+    image: nautilus_sim
+    container_name: sim
+    environment:
+      - "ROS_HOSTNAME=sim"
+      - "ROS_MASTER_URI=http://surface:11311"
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+    networks:
+      - nautilus_network
+
+networks:
+  nautilus_network:
+    driver: bridge
