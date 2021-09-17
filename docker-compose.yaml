@@ -14,11 +14,17 @@ services:
     networks:
       - nautilus_network
     volumes:
-      - nautilus_logs:/root/logs
+      - type: volume 
+        source: nautilus_logs
+        target: /root/logs
+      - type: bind
+        source: ./src
+        target: /root/catkin_ws/src
   sim:
-    build: https://github.com/uwrov/nautilus_sim
+    profiles: ['sim']
+    build: ../nautilus_sim/
     image: nautilus_sim
-    container_name: sim
+    container_name: sim_surface
     environment:
       - "ROS_HOSTNAME=sim"
       - "ROS_MASTER_URI=http://surface:11311"
@@ -28,6 +34,13 @@ services:
     tty: true
     networks:
       - nautilus_network
+    volumes:
+      - type: bind
+        source: ../nautilus_sim/models/nautilus
+        target: /root/gzweb/http/client/assets/nautilus
+      - type: bind
+        source: ../nautilus_sim/nautilus_worlds
+        target: /root/catkin_ws/src/nautilus_worlds
 
 networks:
   nautilus_network:
