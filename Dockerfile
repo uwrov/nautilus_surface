@@ -27,8 +27,8 @@ RUN mkdir -p /root/catkin_ws/src
 
 # Copy Website Files
 WORKDIR /root
-COPY uwrov_interface /root/catkin_ws/src/uwrov_interface
-COPY uwrov_server /root/catkin_ws/src/uwrov_server
+COPY src/uwrov_interface /root/catkin_ws/src/uwrov_interface
+COPY src/uwrov_server /root/catkin_ws/src/uwrov_server
 
 # Install node dependencies
 RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
@@ -36,8 +36,8 @@ RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
     && npm install
 
 # Copy ROS Packages
-COPY nautilus_launch /root/catkin_ws/src/nautilus_launch
-COPY nautilus_scripts /root/catkin_ws/src/nautilus_scripts
+COPY src/nautilus_launch /root/catkin_ws/src/nautilus_launch
+COPY src/nautilus_scripts /root/catkin_ws/src/nautilus_scripts
 
 # Build ROS Packages
 RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
