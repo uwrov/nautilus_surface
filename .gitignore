@@ -1,3 +1,6 @@
+# is typically added with the bind mount
+src/CMakeLists.txt
+
 devel/
 logs/
 build/
