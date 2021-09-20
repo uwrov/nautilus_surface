@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import rospy
 from geometry_msgs.msg import Wrench
 import time
 
@@ -35,6 +36,7 @@ def update_state(state, sio):
         msg.torque.y = state["ang_y"]
         msg.torque.z = state["ang_z"]
 
+        rospy.loginfo(msg)
         current = state
 
 

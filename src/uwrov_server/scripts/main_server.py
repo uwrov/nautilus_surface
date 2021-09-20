@@ -14,8 +14,8 @@ from servers import scripts_mgr
 # Payload.max_decode_packets = 50
 
 
-HOST_IP = "localhost"
-# HOST_IP = "0.0.0.0"
+# HOST_IP = "localhost"
+HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
 
 app = Flask(__name__)
@@ -57,7 +57,7 @@ def publish_empty_signal():
 if __name__ == '__main__':
     """ Sets up rospy and starts servers """
     try:
-        print("main server is running")
+        rospy.loginfo("main server is running")
 
         rospy.init_node('surface')
         image_subscriber = rospy.Subscriber(image_server.topics['img_sub'], CompressedImage, image_server.send_image, ('img_sub', sio))

@@ -9,6 +9,7 @@ services:
       - "ROS_HOSTNAME=surface"
     ports:
       - "3000:3000"
+      - "4040:4040"
     stdin_open: true
     tty: true
     networks:
@@ -20,6 +21,9 @@ services:
       - type: bind
         source: ./src
         target: /root/catkin_ws/src
+      - type: volume
+        source: node_files
+        target: /root/catkin_ws/src/uwrov_interface/node_modules
   sim:
     profiles: ['sim']
     build: ../nautilus_sim/
