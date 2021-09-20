@@ -53,3 +53,5 @@ networks:
 volumes:
   nautilus_logs:
     external: true
+  node_files:
+    external: true
