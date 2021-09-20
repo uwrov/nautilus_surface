@@ -11,7 +11,7 @@ ROS motor code driver
 """
 
 #keyboard_topic = '/nautilus/nautilus_motors/wrench'
-listen_topic = 'nautilus/motors/commands'
+listen_topic = '/nautilus/motors/commands'
 publish_topic = '/nautilus/motors/pwm'
 
 dims = [MultiArrayDimension('data', 6, 16)]
@@ -20,7 +20,6 @@ layout = MultiArrayLayout(dim=dims, data_offset=0)
 # Calculate pwm to be applied onto each motor and publish to motors
 def drive(wrench_msg, publisher):
     data = calculate_pwms(wrench_msg)
-    print(data)
     msg = Int16MultiArray(layout=layout, data=data)
     publisher.publish(msg)
 
@@ -30,7 +29,7 @@ def main():
     pub = rospy.Publisher(publish_topic, Int16MultiArray, queue_size=1)
 
     print('starting listener on', listen_topic)
-    rospy.init_node('motor_driver')
+    rospy.init_node('motors')
     rospy.Subscriber(listen_topic, Wrench, drive, (pub))
 
     rospy.on_shutdown(shutdown_fn)
