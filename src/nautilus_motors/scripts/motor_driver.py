@@ -15,14 +15,14 @@ listen_topic = 'nautilus/motors/commands'
 publish_topic = '/nautilus/motors/pwm'
 
 dims = [MultiArrayDimension('data', 6, 16)]
-layout = MultiArrayLayout(dims, 0)
-data_ptr = [[0 for _ in range(6)]]
-msg = Int16MultiArray(layout=layout, data=data_ptr[0])
+layout = MultiArrayLayout(dim=dims, data_offset=0)
 
 # Calculate pwm to be applied onto each motor and publish to motors
-def drive(w, args):
-    data_ptr[0] = calculate_pwms(w)
-    args[0].publish(msg)
+def drive(wrench_msg, publisher):
+    data = calculate_pwms(wrench_msg)
+    print(data)
+    msg = Int16MultiArray(layout=layout, data=data)
+    publisher.publish(msg)
 
 # launch publisher and subscriber
 def main():

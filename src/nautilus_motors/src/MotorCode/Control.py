@@ -84,7 +84,7 @@ def calculate_pwms(controlInputs: Wrench) -> list:
         # zero out vertical motors
         pwm_transform(controlOutputs, 4, 0)
         pwm_transform(controlOutputs, 5, 0)
-    return controlOutputs
+    return [int(c) for c in controlOutputs]
 
 if __name__ == '__main__':
     
