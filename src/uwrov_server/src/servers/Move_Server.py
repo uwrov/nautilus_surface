@@ -59,7 +59,6 @@ def publish(velocity_publisher):
     -------
     None
     """
-    print('publishing')
     while True:
         velocity_publisher.publish(msg)
         time.sleep(.05)

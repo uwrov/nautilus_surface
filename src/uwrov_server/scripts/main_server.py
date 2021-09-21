@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import rospy
+import threading
+import signal
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
 from sensor_msgs.msg import Image, CompressedImage
 from std_msgs.msg import Int16, Empty
-import threading
 from geometry_msgs.msg import Wrench
 from servers import image_server
 from servers import move_server
@@ -54,25 +55,30 @@ def send_error_message(data):
 def publish_empty_signal():
     empty_publisher.publish(msg)
 
+def shutdown_server(signum, frame):
+    rospy.loginfo("Shutting down main server")
+    sio.stop()
+    exit(signal.SIGTERM)
+
 if __name__ == '__main__':
     """ Sets up rospy and starts servers """
-    try:
-        rospy.loginfo("main server is running")
+    rospy.logdebug("main server is running")
 
-        rospy.init_node('surface')
-        image_subscriber = rospy.Subscriber(image_server.topics['img_sub'], CompressedImage, image_server.send_image, ('img_sub', sio))
-        camera_subscriber = rospy.Subscriber(image_server.topics['camera_stream'], CompressedImage, image_server.send_image, ('camera_stream', sio))
+    rospy.init_node('surface', log_level=rospy.DEBUG)
+    image_subscriber = rospy.Subscriber(image_server.topics['img_sub'], CompressedImage, image_server.send_image, ('img_sub', sio))
+    camera_subscriber = rospy.Subscriber(image_server.topics['camera_stream'], CompressedImage, image_server.send_image, ('camera_stream', sio))
 
-        old_subscriber_1 = rospy.Subscriber(image_server.topics['old cam 1'], CompressedImage, image_server.send_image, ('old cam 1', sio))
-        old_subscriber_2 = rospy.Subscriber(image_server.topics['old cam 2'], CompressedImage, image_server.send_image, ('old cam 2', sio))
+    old_subscriber_1 = rospy.Subscriber(image_server.topics['old cam 1'], CompressedImage, image_server.send_image, ('old cam 1', sio))
+    old_subscriber_2 = rospy.Subscriber(image_server.topics['old cam 2'], CompressedImage, image_server.send_image, ('old cam 2', sio))
 
-        velocity_publisher = rospy.Publisher('/nautilus/motors/commands', Wrench, queue_size=10)
-        channel_publisher = rospy.Publisher('/nautilus/cameras/switch', Int16, queue_size=1)
-        threading.Thread(target=Move_Server.publish, args=(velocity_publisher,)).start()
+    velocity_publisher = rospy.Publisher('/nautilus/motors/commands', Wrench, queue_size=10)
+    channel_publisher = rospy.Publisher('/nautilus/cameras/switch', Int16, queue_size=1)
+    threading.Thread(target=move_server.publish, args=(velocity_publisher,), daemon=True).start()
 
-        scripts_manager = scripts_mgr.ScriptManager(sio)
+    scripts_manager = scripts_server.ScriptManager(sio)
 
-        empty_publisher = rospy.Publisher('/nautilus/controls/signal', Empty, queue_size=1)
+    empty_publisher = rospy.Publisher('/nautilus/controls/signal', Empty, queue_size=1)
 
-        sio.run(app, host=HOST_IP, port=HOST_PORT)
-    except rospy.ROSInterruptException: pass
+    signal.signal(signal.SIGINT, shutdown_server)
+    # imgsub.register(image_server.topics['img_sub'], CompressedImage, sio)
+    sio.run(app, host=HOST_IP, port=HOST_PORT)
