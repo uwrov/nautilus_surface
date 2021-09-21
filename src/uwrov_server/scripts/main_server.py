@@ -13,30 +13,43 @@ from subscribers.image_sub import ImageSub
 HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
 
+
+class SubInfo:
+    def __init__(self, ros_topic, sio_route, sub):
+        self.ros_topic = ros_topic
+        self.sio_route = sio_route
+        self.sub = sub
+
+
+class PubInfo:
+    def __init__(self, ros_topic, pub):
+        self.ros_topic = ros_topic
+        self.pub = pub
+
+
 app = Flask(__name__)
 sio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
-channel_publisher = None
 
 # Maps socketio image id to ROS topic name
-image_handles = {
-    "camera_stream": "/nautilus/cameras/stream",
-    "img_sub": "/image/distribute"
-}
+image_handles = ['camera_stream', 'img_sub']
 
 # aux storage to make sure subscriber objects aren't garbage collected
-subscribers = []
+subscribers = {
+    'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', None),
+    'img_h': SubInfo('/image/distribute', 'Image Display', None),
+}
 
 # Map of handles to rospy pub objects
 publishers = {
-    'move_h': None,
-    'channel_h': None
+    'move_h': PubInfo('/nautilus/motors/commands', None),
+    'channel_h': PubInfo('/nautilus/cameras/switch', None)
 }
 
 
 @sio.on("Get IDs")
 def send_image_id():
-    sio.emit("IDs", {'ids': list(image_handles.keys())}, broadcast=True)
+    sio.emit("IDs", {'ids': image_handles}, broadcast=True)
 
 
 @sio.on("Set Camera")
@@ -62,11 +75,12 @@ if __name__ == '__main__':
     rospy.init_node('surface', log_level=rospy.DEBUG)
 
     # Register our subscribers and publishers
-    for sio_id, ros_topic in image_handles.items():
-        subscribers.append(ImageSub(ros_topic, sio_id))
+    for handle in subscribers:
+        subinfo = subscribers[handle]
+        subinfo.sub = ImageSub(subinfo.ros_topic, subinfo.sio_route)
 
-    publishers['channel_h'] = ChannelPub('/nautilus/cameras/switch')
-    publishers['move_h'] = MovePub('/nautilus/motors/commands')
+    publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
+    publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)
