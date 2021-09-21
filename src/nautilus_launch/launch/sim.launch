@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(nautilus_launch)/launch/system.launch"/>
+
+  <group ns="sim">
+  
+  </group>
+</launch>
