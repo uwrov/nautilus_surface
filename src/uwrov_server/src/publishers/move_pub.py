@@ -6,6 +6,10 @@ from geometry_msgs.msg import Wrench
 
 
 class MovePub(ServerPub):
+    """
+    Publisher for movement commands, dictated by current state of the xbox controller
+    """
+
     def __init__(self, topic):
         super().__init__(topic, Wrench, queue_size=10)
         self.msg = Wrench()

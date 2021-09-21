@@ -3,10 +3,12 @@
 import rospy
 from abc import ABC, abstractmethod
 
-# Server which takes in data from a ROS topic and forwards data to the interface
-
 
 class ServerSub(ABC):
+    """
+    Base class for any subscribers added to the OceanUI server.
+    Transfers data from ROS topics to OceanUI.
+    """
     @abstractmethod
     def __init__(self, topic: str, type: any,
                  args: tuple = None, queue_size: int = 1):

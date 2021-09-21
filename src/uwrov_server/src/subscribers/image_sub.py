@@ -4,6 +4,10 @@ from sensor_msgs.msg import CompressedImage
 
 
 class ImageSub(ServerSub):
+    """
+    Subscriber which receives image data from a ROS camera.
+    """
+
     def __init__(self, topic, id):
         super().__init__(topic, CompressedImage)
 
@@ -16,4 +20,3 @@ class ImageSub(ServerSub):
             'id': self.id
         }
         self.sio.emit("Image Display", packet, broadcast=True)
-
