@@ -7,8 +7,8 @@ from std_msgs.msg import Int16, Empty
 import threading
 from geometry_msgs.msg import Wrench
 from servers import image_server
-from servers import Move_Server
-from servers import scripts_mgr
+from servers import move_server
+from servers import scripts_server
 
 # from engineio.payload import Payload
 # Payload.max_decode_packets = 50
@@ -36,19 +36,19 @@ def set_image_camera(data):
 
 @sio.on("Send State")
 def send_move_state(data):
-    Move_Server.update_state(data, sio)
+    move_server.update_state(data, sio)
 
 @sio.on('Get Scripts')
 def send_scripts_list():
-    scripts_manager.send_scipts()
+    scripts_server.send_scipts()
 
 @sio.on("Send Commands")
 def send_script_command(data):
-    scripts_manager.json_request(data)
+    scripts_server.json_request(data)
 
 @sio.on("Error Message")
 def send_error_message(data):
-    scripts_manager.process_error_msg(data)
+    scripts_server.process_error_msg(data)
 
 @sio.on("Activate Script")
 def publish_empty_signal():
