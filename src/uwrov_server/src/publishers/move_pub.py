@@ -1,64 +1,44 @@
 #!/usr/bin/env python3
 import rospy
+import threading
+from .publisher import ServerPub
 from geometry_msgs.msg import Wrench
-import time
-
-current = None
-msg = Wrench()
-
-def update_state(state, sio):
-    """
-    Updates State based on new contoller input
-    Receives movement information from controller as a JSON object.
-    The movement info is then converted into a Wrench object
-    Parameters
-    -------
-    state : JSON/Dictionary
-        stores the movement of the controller in terms of linear components and
-        anglular components.
-        state = {lin_x: 0, lin_y: 0, lin_z: 0, ang_x: 0, ang_y: 0, ang_z: 0,
-                 a: true, b: false, x: false, y: false}
-    Returns
-    -------
-    None
-    """
-    global msg, current, channel
-    if (current is None or state != current):
-        if (state["ang_x"] != 0 or state["ang_y"] != 0 or state["ang_z"] != 0):
-            state["lin_x"] = 0
-            state["lin_y"] = 0
-            state["lin_z"] = 0
-
-        msg.force.x = state["lin_x"]
-        msg.force.y = state["lin_y"]
-        msg.force.z = state["lin_z"]
-        msg.torque.x = state["ang_x"]
-        msg.torque.y = state["ang_y"]
-        msg.torque.z = state["ang_z"]
-
-        rospy.loginfo(msg)
-        current = state
 
 
-def publish(velocity_publisher):
-    """
-    Publishes controller input to rospy
-    publishes the wrench object, which stores the contoller input, to rospy
-    every 20 milliseconds while the server is running
-    Parameters
-    -------
-    buffer : Tuple
-        takes in an arbitary tuple because the
-        ```
-        _thread.start_new_thread(function, tuple)
-        ```
-        method needs requires a tuple as the second argument tuple to call
-        the function.
-        This publish() function, does nothing with this value.
-    Returns
-    -------
-    None
-    """
-    while True:
-        velocity_publisher.publish(msg)
-        time.sleep(.05)
+class MovePub(ServerPub):
+    def __init__(self, topic):
+        super().__init__(topic, Wrench, queue_size=10)
+        self.msg = Wrench()
+        self.current_state = None
+        self.launch_continuous_publisher()
+
+    def update_state(self, state):
+        if (self.current_state is None or state != self.current_state):
+            if (state["ang_x"] != 0 or state["ang_y"] != 0 or state["ang_z"] != 0):
+                state["lin_x"] = 0
+                state["lin_y"] = 0
+                state["lin_z"] = 0
+
+            self.msg.force.x = state["lin_x"]
+            self.msg.force.y = state["lin_y"]
+            self.msg.force.z = state["lin_z"]
+            self.msg.torque.x = state["ang_x"]
+            self.msg.torque.y = state["ang_y"]
+            self.msg.torque.z = state["ang_z"]
+
+            rospy.loginfo(self.msg)
+            self.current_state = state
+
+    def publish(self):
+        self.publisher.publish(self.msg)
+
+    def publish_continuous(self, rate: int):
+        r = rospy.Rate(rate)
+        while not rospy.is_shutdown():
+            self.publish()
+            r.sleep()
+
+    def launch_continuous_publisher(self):
+        self.publisher_thread = threading.Thread(
+            target=self.publish_continuous, args=(20,), daemon=True)
+        self.publisher_thread.start()

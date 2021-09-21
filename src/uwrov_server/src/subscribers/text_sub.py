@@ -1,11 +1,12 @@
 import rospy
 from std_msgs.msg import String
 
-from .subscriber import SubServer
+from .subscriber import SeverSub
 
-class TextServer(SubServer):
-  def __init__(self, topic):
-    super(TextServer, self).__init__(topic, String)
 
-  def callback(self, msg):
-    rospy.loginfo(msg.data)
+class TextSub(SeverSub):
+    def __init__(self, topic):
+        super().__init__(topic, String)
+
+    def callback(self, msg):
+        rospy.loginfo(msg.data)
