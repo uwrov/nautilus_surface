@@ -10,15 +10,13 @@ class TextSub(SeverSub):
     Gets text from a topic.
     """
 
-    def __init__(self, topic, sio_route, sio_id):
+    def __init__(self, topic, sio_route):
         super().__init__(topic, String)
         self.sio_route = sio_route
-        self.sio_id = sio_id
         self.sio = SocketIO()
 
     def callback(self, msg):
         packet = {
-            'text': msg.data,
-            'id': self.id
+            'text': msg.data
         }
         self.sio.emit(self.sio, packet, broadcast=True)

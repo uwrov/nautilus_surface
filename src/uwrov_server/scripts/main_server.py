@@ -40,7 +40,7 @@ image_handles = ['camera_stream', 'img_sub']
 subscribers = {
     'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
     'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
-    'text_h': SubInfo('/nautilus/text', 'Text', 'text_msg', None)
+    'text_h': SubInfo('/nautilus/text', 'Text', None, None)
 }
 
 # Map of handles to rospy pub objects
@@ -77,8 +77,7 @@ if __name__ == '__main__':
 
     rospy.init_node('surface', log_level=rospy.DEBUG)
 
-    subscribers['text_h'].sub = TextSub(subscribers['text_h'].ros_topic,
-                                        subscribers['text_h'].sio_route)
+    subscribers['text_h'].sub = TextSub(subscribers['text_h'].ros_topic)
 
     # Register our subscribers and publishers
     for handle in subscribers:
