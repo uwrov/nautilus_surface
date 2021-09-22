@@ -40,7 +40,10 @@ image_handles = ['camera_stream', 'img_sub']
 subscribers = {
     'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
     'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
+<<<<<<< HEAD
     'text_h': SubInfo('/nautilus/text', 'Text', None, None)
+=======
+>>>>>>> main
 }
 
 # Map of handles to rospy pub objects
