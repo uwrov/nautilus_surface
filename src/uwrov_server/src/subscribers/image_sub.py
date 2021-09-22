@@ -10,7 +10,6 @@ class ImageSub(ServerSub):
 
     def __init__(self, topic, sio_route, sio_id):
         super().__init__(topic, CompressedImage)
-
         self.sio_route = sio_route
         self.sio_id = sio_id
         self.sio = SocketIO()
