@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../navbar/NavBar.js";
 import Console from "../console/Console.js";
 import WidgetWindow from "../widgetwindow/WidgetWindow.js";
-import {Widget} from "../widgets/Widget.js";
+import { Widget } from "../widgets/Widget.js";
 
 import "./GUI.css";
 
@@ -13,7 +13,8 @@ class GUI extends React.Component {
       keybindings: {}
     },
     consoleShow: false,
-    widgets: [new Widget("ros_camera"), new Widget("controller"), new Widget("script_runner")]
+    widgets: [new Widget("ros_camera"), new Widget("controller"),
+    new Widget("script_runner"), new Widget("text")]
   };
 
 
@@ -65,7 +66,7 @@ class GUI extends React.Component {
         <Navbar addWidget={this.addWidget} />
         <Console show={this.state.consoleShow} />
         <div className="widgetDisplay">
-          <WidgetWindow widgets={this.state.widgets} update={this.updateWidgets}/>
+          <WidgetWindow widgets={this.state.widgets} update={this.updateWidgets} />
         </div>
       </div>
     );

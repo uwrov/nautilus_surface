@@ -30,7 +30,6 @@ class MovePub(ServerPub):
             self.msg.torque.y = state["ang_y"]
             self.msg.torque.z = state["ang_z"]
 
-            rospy.loginfo(self.msg)
             self.current_state = state
 
     def publish(self):

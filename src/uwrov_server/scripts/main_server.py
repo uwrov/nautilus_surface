@@ -57,12 +57,12 @@ def send_image_id():
 
 @sio.on("Set Camera")
 def set_image_camera(cam_num):
-    publishers['channel_h'].publish(cam_num)
+    publishers['channel_h'].pub.publish(cam_num)
 
 
 @sio.on("Send State")
 def send_move_state(data):
-    publishers['move_h'].update_state(data)
+    publishers['move_h'].pub.update_state(data)
 
 
 def shutdown_server(signum, frame):
@@ -77,13 +77,15 @@ if __name__ == '__main__':
 
     rospy.init_node('surface', log_level=rospy.DEBUG)
 
-    subscribers['text_h'].sub = TextSub(subscribers['text_h'].ros_topic)
+    subscribers['text_h'].sub = TextSub(subscribers['text_h'].ros_topic,
+                                        subscribers['text_h'].sio_route,
+                                        sio)
 
     # Register our subscribers and publishers
-    for handle in subscribers:
+    for handle in ['camera_h', 'img_h']:
         subinfo = subscribers[handle]
         subinfo.sub = ImageSub(
-            subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id)
+            subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id, sio)
 
     publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
