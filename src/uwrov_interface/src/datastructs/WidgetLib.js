@@ -12,6 +12,8 @@ import Xbox from "../components/xbox/Xbox.js";
 
 export let getWidgetComponent = (data) => {
   switch (data.type) {
+    case "text":
+      return <Text props={data.savedProps} />;
     case "settings":
       return <Settings props={data.savedProps} />;
     case "ros_camera":

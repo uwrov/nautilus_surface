@@ -40,6 +40,7 @@ image_handles = ['camera_stream', 'img_sub']
 subscribers = {
     'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
     'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
+    'text_h': SubInfo('/nautilus/text', 'Text', None, None)
 }
 
 # Map of handles to rospy pub objects
@@ -56,12 +57,12 @@ def send_image_id():
 
 @sio.on("Set Camera")
 def set_image_camera(cam_num):
-    publishers['channel_h'].publish(cam_num)
+    publishers['channel_h'].pub.publish(cam_num)
 
 
 @sio.on("Send State")
 def send_move_state(data):
-    publishers['move_h'].update_state(data)
+    publishers['move_h'].pub.update_state(data)
 
 
 def shutdown_server(signum, frame):
@@ -77,10 +78,10 @@ if __name__ == '__main__':
     rospy.init_node('surface', log_level=rospy.DEBUG)
 
     # Register our subscribers and publishers
-    for handle in subscribers:
+    for handle in ['camera_h', 'img_h']:
         subinfo = subscribers[handle]
         subinfo.sub = ImageSub(
-            subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id)
+            subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id, sio)
 
     publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
