@@ -56,12 +56,12 @@ def send_image_id():
 
 @sio.on("Set Camera")
 def set_image_camera(cam_num):
-    publishers['channel_h'].publish(cam_num)
+    publishers['channel_h'].pub.publish(cam_num)
 
 
 @sio.on("Send State")
 def send_move_state(data):
-    publishers['move_h'].update_state(data)
+    publishers['move_h'].pub.update_state(data)
 
 
 def shutdown_server(signum, frame):
