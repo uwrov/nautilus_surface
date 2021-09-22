@@ -9,15 +9,17 @@ from publishers.channel_pub import ChannelPub
 from publishers.move_pub import MovePub
 
 from subscribers.image_sub import ImageSub
+from subscribers.text_sub import TextSub
 
 HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
 
 
 class SubInfo:
-    def __init__(self, ros_topic, sio_route, sub):
+    def __init__(self, ros_topic, sio_route, sio_id, sub):
         self.ros_topic = ros_topic
         self.sio_route = sio_route
+        self.sio_id = sio_id
         self.sub = sub
 
 
@@ -36,8 +38,9 @@ image_handles = ['camera_stream', 'img_sub']
 
 # aux storage to make sure subscriber objects aren't garbage collected
 subscribers = {
-    'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', None),
-    'img_h': SubInfo('/image/distribute', 'Image Display', None),
+    'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
+    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
+    'text_h': SubInfo('/nautilus/text', 'Text', 'text_msg', None)
 }
 
 # Map of handles to rospy pub objects
@@ -74,10 +77,14 @@ if __name__ == '__main__':
 
     rospy.init_node('surface', log_level=rospy.DEBUG)
 
+    subscribers['text_h'].sub = TextSub(subscribers['text_h'].ros_topic,
+                                        subscribers['text_h'].sio_route)
+
     # Register our subscribers and publishers
     for handle in subscribers:
         subinfo = subscribers[handle]
-        subinfo.sub = ImageSub(subinfo.ros_topic, subinfo.sio_route)
+        subinfo.sub = ImageSub(
+            subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id)
 
     publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
