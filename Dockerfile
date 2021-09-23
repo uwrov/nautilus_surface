@@ -25,21 +25,12 @@ RUN . ~/.bashrc \
 # Create a catkin workspace
 RUN mkdir -p /root/catkin_ws/src
 
-# Copy Website Files
+# Set up ROS workspace
 WORKDIR /root
-COPY src/uwrov_interface /root/catkin_ws/src/uwrov_interface
-COPY src/uwrov_server /root/catkin_ws/src/uwrov_server
 
-# Install node dependencies
-RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
-    && cd catkin_ws/src/uwrov_interface \
-    && npm install
-
-# Copy ROS Packages
+# Create a copy of our ROS packages and build
 COPY src/nautilus_launch /root/catkin_ws/src/nautilus_launch
 COPY src/nautilus_scripts /root/catkin_ws/src/nautilus_scripts
-
-# Build ROS Packages
 RUN . ~/.bashrc && . /opt/ros/${ROS_DISTRO}/setup.sh \
     && cd catkin_ws \
     && catkin_make
