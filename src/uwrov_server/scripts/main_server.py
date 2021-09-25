@@ -9,7 +9,6 @@ from publishers.channel_pub import ChannelPub
 from publishers.move_pub import MovePub
 
 from subscribers.image_sub import ImageSub
-from subscribers.text_sub import TextSub
 
 HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
