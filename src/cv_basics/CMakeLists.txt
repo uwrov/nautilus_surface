@@ -212,3 +212,8 @@ catkin_install_python(PROGRAMS
   scripts/webcam_pub.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+catkin_install_python(PROGRAMS
+  scripts/webcam_sub.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
