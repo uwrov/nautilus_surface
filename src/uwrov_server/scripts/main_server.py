@@ -64,9 +64,9 @@ def set_image_camera(cam_num):
 def send_move_state(data):
     publishers['move_h'].pub.update_state(data)
 
-@sio.on("Send User Webcam")
-def send_user_webcam(data):
-    publishers['user_webcam_h'].pub.update_video_frame(data)
+@sio.on("Send User Webcam Frame")
+def send_user_webcam(blob):
+    publishers['user_webcam_h'].pub.update_video_frame(blob)
 
 
 def shutdown_server(signum, frame):

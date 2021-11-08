@@ -17,16 +17,16 @@ class UserWebcamPub(ServerPub):
 
         self.launch_continuous_publisher()
 
-    def update_video_frame(self, state):
+    def update_video_frame(self, blob):
         self.msg.header.stamp = rospy.Time.now()
         self.msg.format = "jpeg"
-        self.msg.data = state.frame
+        self.msg.data = blob
 
     def publish(self, **kwargs):
         self.publisher.publish(self.msg)
 
     def publish_continuously(self, state):
-        rate = rospy.Rate(30)  # 30Hz
+        rate = rospy.Rate(10)  # 10Hz
         while not rospy.is_shutdown():
             self.publish()
             rate.sleep()

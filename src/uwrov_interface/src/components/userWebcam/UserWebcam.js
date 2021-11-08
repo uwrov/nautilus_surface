@@ -13,6 +13,8 @@ export default class UserWebcam extends React.Component {
     constructor(props) {
         super(props);
         this.socket = require('socket.io-client')('http://localhost:4040');
+        this.imageCapture = null;
+        this.frameCaptureInterval = null;
         this.state = {
             frame: null,
         }
@@ -37,9 +39,27 @@ export default class UserWebcam extends React.Component {
         navigator.mediaDevices.getUserMedia(videoConstraints).then(stream => {
             let video = document.querySelector('video');
             video.srcObject = stream;
+
+            // Capture frames from video stream
+            this.imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+            this.frameCaptureInterval = setInterval(() => {
+                this.imageCapture.takePhoto().then(blob => {
+                    this.socket.emit('Send User Webcam Frame', blob);
+                    console.log('Sending frame');
+                }).catch(error => {
+                    console.log(error);
+                });
+            }, 100); // Send frame at 10 fps
         }).catch(err => {
             console.log(err);
         });
+    }
+
+    /**
+     * Clear frame capture interval
+     */
+    componentWillUnmount() {
+        clearInterval(this.frameCaptureInterval);
     }
 
     /**
