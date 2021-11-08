@@ -42,6 +42,8 @@ export default class UserWebcam extends React.Component {
 
             // Capture frames from video stream
             this.imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+        }).then(() => {
+            // Send frame at 10 fps
             this.frameCaptureInterval = setInterval(() => {
                 this.imageCapture.takePhoto().then(blob => {
                     this.socket.emit('Send User Webcam Frame', blob);
@@ -49,7 +51,7 @@ export default class UserWebcam extends React.Component {
                 }).catch(error => {
                     console.log(error);
                 });
-            }, 100); // Send frame at 10 fps
+            }, 100);
         }).catch(err => {
             console.log(err);
         });
