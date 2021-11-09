@@ -13,8 +13,10 @@ export default class UserWebcam extends React.Component {
     constructor(props) {
         super(props);
         this.socket = require('socket.io-client')('http://localhost:4040');
+        this.streamTrack = null;
         this.imageCapture = null;
         this.frameCaptureInterval = null;
+        this.canvas = null;
         this.state = {
             frame: null,
         }
@@ -41,16 +43,28 @@ export default class UserWebcam extends React.Component {
             video.srcObject = stream;
 
             // Capture frames from video stream
-            this.imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+            this.streamTrack = stream.getVideoTracks()[0];
+            this.imageCapture = new ImageCapture(this.streamTrack);
+
+            // Setup canvas for extracting jpeg frame
+            this.canvas = document.getElementById('canvas');
+            this.canvas.width = videoConstraints.video.width.ideal;
+            this.canvas.height = videoConstraints.video.height.ideal;
+
         }).then(() => {
-            // Send frame at 10 fps
+            // Send frame at ~10 fps
             this.frameCaptureInterval = setInterval(() => {
-                this.imageCapture.takePhoto().then(blob => {
-                    this.socket.emit('Send User Webcam Frame', blob);
-                    console.log('Sending frame');
-                }).catch(error => {
-                    console.log(error);
-                });
+                // Only capture image if streamTrack is in correct state
+                if (this.streamTrack.readyState === 'live') {
+                    this.imageCapture.grabFrame().then(bitmap => {
+                        this.canvas.getContext('2d').drawImage(bitmap, 0, 0);
+                        this.canvas.toBlob(blob => {
+                            this.socket.emit('Send User Webcam Frame', blob);
+                        }, 'image/jpeg', 0.25);
+                    }).catch(error => {
+                        console.log(error);
+                    });
+                }
             }, 100);
         }).catch(err => {
             console.log(err);
@@ -71,6 +85,7 @@ export default class UserWebcam extends React.Component {
         return (
             <div className="user-webcam-video">
                 <video id="video" autoPlay={true}/>
+                <canvas id="canvas" hidden/>
             </div>
         );
     }
