@@ -12,6 +12,7 @@ export default class UserWebcam extends React.Component {
      */
     constructor(props) {
         super(props);
+        this.id = this.props.id;
         this.socket = require('socket.io-client')('http://localhost:4040');
         this.streamTrack = null;
         this.imageCapture = null;
@@ -59,7 +60,7 @@ export default class UserWebcam extends React.Component {
                     this.imageCapture.grabFrame().then(bitmap => {
                         this.canvas.getContext('2d').drawImage(bitmap, 0, 0);
                         this.canvas.toBlob(blob => {
-                            this.socket.emit('Send User Webcam Frame', blob);
+                            this.socket.emit('Send User Webcam Frame ' + this.id, blob);
                         }, 'image/jpeg', 0.25);
                     }).catch(error => {
                         console.log(error);

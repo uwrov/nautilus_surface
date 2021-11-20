@@ -46,7 +46,8 @@ subscribers = {
 publishers = {
     'move_h': PubInfo('/nautilus/motors/commands', None),
     'channel_h': PubInfo('/nautilus/cameras/switch', None),
-    'user_webcam_h': PubInfo('/nautilus/cameras/user_webcam', None)
+    'user_webcam_0_h': PubInfo('/nautilus/cameras/user_webcam_0', None),
+    'user_webcam_1_h': PubInfo('/nautilus/cameras/user_webcam_1', None),
 }
 
 
@@ -64,9 +65,13 @@ def set_image_camera(cam_num):
 def send_move_state(data):
     publishers['move_h'].pub.update_state(data)
 
-@sio.on("Send User Webcam Frame")
+@sio.on("Send User Webcam Frame 0")
 def send_user_webcam(blob):
-    publishers['user_webcam_h'].pub.update_video_frame(blob)
+    publishers['user_webcam_0_h'].pub.update_video_frame(blob)
+
+@sio.on("Send User Webcam Frame 1")
+def send_user_webcam(blob):
+    publishers['user_webcam_1_h'].pub.update_video_frame(blob)
 
 
 def shutdown_server(signum, frame):
@@ -89,7 +94,8 @@ if __name__ == '__main__':
 
     publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
-    publishers['user_webcam_h'].pub = UserWebcamPub(publishers['user_webcam_h'].ros_topic)
+    publishers['user_webcam_0_h'].pub = UserWebcamPub(publishers['user_webcam_0_h'].ros_topic)
+    publishers['user_webcam_1_h'].pub = UserWebcamPub(publishers['user_webcam_1_h'].ros_topic)
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)

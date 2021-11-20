@@ -16,8 +16,10 @@ export let getWidgetComponent = (data) => {
             return <RosCamera props={data.savedProps}/>;
         case "ip_camera":
             return <IpCamera props={data.savedProps}/>;
-        case "user_webcam":
-            return <UserWebcam props={data.savedProps}/>;
+        case "user_webcam_0":
+            return <UserWebcam props={data.savedProps} id={0}/>;
+        case "user_webcam_1":
+            return <UserWebcam props={data.savedProps} id={1}/>;
         case "controller":
             return <Xbox props={data.savedProps}/>;
         case "key_controller":
