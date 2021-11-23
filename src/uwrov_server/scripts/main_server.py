@@ -32,7 +32,6 @@ class PubInfo:
 app = Flask(__name__)
 sio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
-
 # Maps socketio image id to ROS topic name
 image_handles = ['camera_stream', 'img_sub']
 
@@ -46,8 +45,6 @@ subscribers = {
 publishers = {
     'move_h': PubInfo('/nautilus/motors/commands', None),
     'channel_h': PubInfo('/nautilus/cameras/switch', None),
-    'user_webcam_0_h': PubInfo('/nautilus/cameras/user_webcam_0', None),
-    'user_webcam_1_h': PubInfo('/nautilus/cameras/user_webcam_1', None),
 }
 
 
@@ -65,13 +62,18 @@ def set_image_camera(cam_num):
 def send_move_state(data):
     publishers['move_h'].pub.update_state(data)
 
-@sio.on("Send User Webcam Frame 0")
-def send_user_webcam(blob):
-    publishers['user_webcam_0_h'].pub.update_video_frame(blob)
 
-@sio.on("Send User Webcam Frame 1")
-def send_user_webcam(blob):
-    publishers['user_webcam_1_h'].pub.update_video_frame(blob)
+@sio.on("Send User Webcam Frame")
+def send_user_webcam(data):
+    publisher_name = 'user_webcam_h_' + str(data["channel"])
+    topic_name = '/nautilus/cameras/user_webcam/' + str(data["channel"])
+
+    # Add this channel to publishers if it doesn't exist
+    if publisher_name not in publishers:
+        publishers[publisher_name] = PubInfo(topic_name, UserWebcamPub(topic_name))
+
+    # Send the frame
+    publishers[publisher_name].pub.update_video_frame(data["blob"])
 
 
 def shutdown_server(signum, frame):
@@ -94,8 +96,6 @@ if __name__ == '__main__':
 
     publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
-    publishers['user_webcam_0_h'].pub = UserWebcamPub(publishers['user_webcam_0_h'].ros_topic)
-    publishers['user_webcam_1_h'].pub = UserWebcamPub(publishers['user_webcam_1_h'].ros_topic)
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)

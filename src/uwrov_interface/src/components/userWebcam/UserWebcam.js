@@ -12,15 +12,15 @@ export default class UserWebcam extends React.Component {
      */
     constructor(props) {
         super(props);
-        this.id = this.props.id;
         this.socket = require('socket.io-client')('http://localhost:4040');
         this.streamTrack = null;
         this.imageCapture = null;
         this.frameCaptureInterval = null;
         this.canvas = null;
         this.state = {
-            frame: null,
+            channel: 0,
         }
+        this.handleChange = this.handleChange.bind(this);
     }
 
     /**
@@ -60,7 +60,7 @@ export default class UserWebcam extends React.Component {
                     this.imageCapture.grabFrame().then(bitmap => {
                         this.canvas.getContext('2d').drawImage(bitmap, 0, 0);
                         this.canvas.toBlob(blob => {
-                            this.socket.emit('Send User Webcam Frame ' + this.id, blob);
+                            this.socket.emit('Send User Webcam Frame', {channel: this.state.channel, blob: blob});
                         }, 'image/jpeg', 0.25);
                     }).catch(error => {
                         console.log(error);
@@ -79,6 +79,13 @@ export default class UserWebcam extends React.Component {
         clearInterval(this.frameCaptureInterval);
     }
 
+    handleChange(event) {
+        let channelNumber = event.target.value;
+        if (channelNumber !== "" || channelNumber !== null) {
+            this.setState({channel: channelNumber});
+        }
+    }
+
     /**
      * Display webcam as video element
      */
@@ -87,6 +94,8 @@ export default class UserWebcam extends React.Component {
             <div className="user-webcam-video">
                 <video id="video" autoPlay={true}/>
                 <canvas id="canvas" hidden/>
+                <p>Set Channel:</p>
+                <input value={this.state.channel} onChange={this.handleChange}/>
             </div>
         );
     }

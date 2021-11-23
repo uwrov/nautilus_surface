@@ -13,13 +13,13 @@ class UserWebcamPub(ServerPub):
     def __init__(self, topic):
         super().__init__(topic, CompressedImage, queue_size=1)
         self.msg = CompressedImage()
+        self.msg.format = "jpeg"
         self.publisher_thread = None
 
         self.launch_continuous_publisher()
 
     def update_video_frame(self, blob):
         self.msg.header.stamp = rospy.Time.now()
-        self.msg.format = "jpeg"
         self.msg.data = blob
 
     def publish(self, **kwargs):

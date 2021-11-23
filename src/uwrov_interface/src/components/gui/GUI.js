@@ -13,7 +13,7 @@ class GUI extends React.Component {
             keybindings: {}
         },
         consoleShow: false,
-        widgets: [new Widget("user_webcam_0")]
+        widgets: [new Widget("user_webcam")]
     };
 
 
@@ -38,6 +38,11 @@ class GUI extends React.Component {
                     widgets: widgets,
                 });
                 break;
+            case "User Webcam":
+                widgets.push(new Widget("user_webcam"));
+                this.setState({
+                    widgets: widgets,
+                });
             case "Controller":
                 widgets.push(new Widget("controller"));
                 this.setState({
