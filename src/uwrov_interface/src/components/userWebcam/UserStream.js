@@ -9,10 +9,10 @@ export default class UserStream extends React.Component {
       timestamp: 1638334180.820340,
     };
 
-    this.socket.on("Text", this.updateText);
+    this.socket.on("Text", this.displayVideo);
   }
 
-  updateText = (data) => {
+  displayVideo = (data) => {
     function encode (input) {
         var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         var output = "";
