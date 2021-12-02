@@ -10,6 +10,7 @@ from publishers.move_pub import MovePub
 from publishers.user_webcam_pub import UserWebcamPub
 
 from subscribers.image_sub import ImageSub
+from subscribers.user_webcam_sub import UserStream
 
 HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
@@ -39,7 +40,8 @@ image_handles = ['camera_stream', 'img_sub']
 # aux storage to make sure subscriber objects aren't garbage collected
 subscribers = {
     'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
-    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None)
+    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
+    'user_stream_h': SubInfo('/nautilus/cameras/user_webcam', 'Text', None, None)
 }
 
 # Map of handles to rospy pub objects
@@ -80,6 +82,10 @@ if __name__ == '__main__':
     rospy.loginfo("main server is running")
 
     rospy.init_node('surface', log_level=rospy.DEBUG)
+
+    subscribers['user_stream_h'].sub = UserStream(subscribers['user_stream_h'].ros_topic,
+                                        subscribers['user_stream_h'].sio_route,
+                                        sio)
 
     # Register our subscribers and publishers
     for handle in ['camera_h', 'img_h']:
