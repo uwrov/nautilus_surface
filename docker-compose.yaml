@@ -13,9 +13,10 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - nautilus_network
+      vlan:
+        ipv4_address: 420.69.0.1
     volumes:
-      - type: volume 
+      - type: volume
         source: nautilus_logs
         target: /root/logs
       - type: bind
@@ -24,31 +25,18 @@ services:
       - type: volume
         source: node_files
         target: /root/catkin_ws/src/uwrov_interface/node_modules
-  sim:
-    profiles: ['sim']
-    build: ../nautilus_sim/
-    image: nautilus_sim
-    container_name: sim_surface
-    environment:
-      - "ROS_HOSTNAME=sim"
-      - "ROS_MASTER_URI=http://surface:11311"
-    ports:
-      - "8080:8080"
-    stdin_open: true
-    tty: true
-    networks:
-      - nautilus_network
-    volumes:
-      - type: bind
-        source: ../nautilus_sim/models/nautilus
-        target: /root/gzweb/http/client/assets/nautilus
-      - type: bind
-        source: ../nautilus_sim/nautilus_worlds
-        target: /root/catkin_ws/src/nautilus_worlds
 
 networks:
-  nautilus_network:
-    driver: bridge
+  dockervlan:
+    name: dockervlan
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: "420.69.0.1/32"
+          gateway: "192.168.0.1"
+
 
 volumes:
   nautilus_logs:
