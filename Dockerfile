@@ -40,3 +40,5 @@ RUN echo "source /root/catkin_ws/devel/setup.bash" >> ~/.bashrc
 ENV ROS_LOG_DIR /root/logs
 
 EXPOSE 3000
+
+RUN apt-get install -y net-tools iputils-ping

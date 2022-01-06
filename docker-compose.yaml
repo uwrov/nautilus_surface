@@ -1,7 +1,8 @@
-version: "3.9"
+version: "3.7"
 
 services:
   surface:
+    network_mode: host
     build: ./
     image: nautilus_surface
     container_name: surface
@@ -12,9 +13,6 @@ services:
       - "4040:4040"
     stdin_open: true
     tty: true
-    networks:
-      vlan:
-        ipv4_address: 420.69.0.1
     volumes:
       - type: volume
         source: nautilus_logs
@@ -25,18 +23,6 @@ services:
       - type: volume
         source: node_files
         target: /root/catkin_ws/src/uwrov_interface/node_modules
-
-networks:
-  dockervlan:
-    name: dockervlan
-    driver: macvlan
-    driver_opts:
-      parent: eth0
-    ipam:
-      config:
-        - subnet: "420.69.0.1/32"
-          gateway: "192.168.0.1"
-
 
 volumes:
   nautilus_logs:

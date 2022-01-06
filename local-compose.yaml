@@ -1,5 +1,6 @@
 services:
   surface:
+    network_mode: bridge
     networks:
       - nautilus_network
   sim:
