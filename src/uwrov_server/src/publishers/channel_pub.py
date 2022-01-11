@@ -15,4 +15,4 @@ class ChannelPub(ServerPub):
     def publish(self, channel):
         rospy.loginfo("Changing channel to %d", channel)
         self.msg.data = channel
-        self.channel.publish(self.msg)
+        self.publisher.publish(self.msg)
