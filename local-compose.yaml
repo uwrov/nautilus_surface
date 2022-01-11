@@ -1,0 +1,57 @@
+services:
+  surface:
+    networks:
+      - nautilus_network
+    build: ./
+    image: nautilus_surface
+    container_name: surface
+    hostname: surface
+    environment:
+      - "ROS_HOSTNAME=surface"
+    ports:
+      - "3000:3000"
+      - "4040:4040"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: volume
+        source: nautilus_logs
+        target: /root/logs
+      - type: bind
+        source: ./src
+        target: /root/catkin_ws/src
+      - type: volume
+        source: node_files
+        target: /root/catkin_ws/src/uwrov_interface/node_modules
+  sim:
+      profiles: ['sim']
+      build: ../nautilus_sim/
+      image: nautilus_sim
+      container_name: sim
+      hostname: sim
+      environment:
+        - "ROS_HOSTNAME=sim"
+        - "ROS_MASTER_URI=http://surface:11311"
+      ports:
+        - "8080:8080"
+      stdin_open: true
+      tty: true
+      networks:
+        - nautilus_network
+      volumes:
+        - type: bind
+          source: ../nautilus_sim/models/nautilus
+          target: /root/gzweb/http/client/assets/nautilus
+        - type: bind
+          source: ../nautilus_sim/nautilus_worlds
+          target: /root/catkin_ws/src/nautilus_worlds
+
+networks:
+  nautilus_network:
+    driver: bridge
+
+volumes:
+  nautilus_logs:
+    external: true
+  node_files:
+    external: true

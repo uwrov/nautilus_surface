@@ -122,8 +122,8 @@ export default class Xbox extends React.Component {
     }
 
     this.vect = {
-      lin_x: this.state.LeftStickY,
-      lin_y: this.state.LeftStickX,
+      lin_x: this.state.LeftStickX,
+      lin_y: this.state.LeftStickY,
       lin_z: this.state.RightStickY,
       ang_x: 0,
       ang_y: 0,

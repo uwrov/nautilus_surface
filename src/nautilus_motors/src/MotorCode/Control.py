@@ -24,13 +24,16 @@ pin5 = 26
 pin6 = 12
 
 # scalers applied onto each motors, index 0 is motor A and index 5 is motor F
-motor_scalers = [0.25, -0.25, -0.25, 0.25, 0.25, 0.25]
+# motor_scalers = [0.25, -0.25, -0.25, 0.25, 0.25, 0.25]
+motor_scalers = [0.25, 0.25, 0.25, 0.25, 0.25, 0.25]
 
 
 # controlOutputs - array of pwms to set
 # idx - index of the array to set (0 -> A, 5->F)
 # c - motor constant, value in [-1,1] which scales output of motor, 
 #     0 is stop, -1 is full blast reverse, 1 is full blast forward
+
+# Assumes positive Y is forward, positive X is right, positive Z is up.
 def pwm_transform(controlOutputs, idx, c):
     global motor_scalers
     controlOutputs[idx] = (motor_scalers[idx] * slope * c) + intercept 
@@ -49,18 +52,18 @@ def calculate_pwms(controlInputs: Wrench) -> list:
         assert item >= -1 or item <= 1
 
     # flip inputs as needed
-    controlInputs[0] *= -1      # X 
-    controlInputs[1] *= 1      # Y
-    controlInputs[2] *= -1      # Z
-    controlInputs[3] *= 1      # R
+    # controlInputs[0] *= -1      # X 
+    # controlInputs[1] *= 1      # Y
+    # controlInputs[2] *= -1      # Z
+    # controlInputs[5] *= 1      # R
 
     # Case where there is no rotation based on the "R" value of the input array being zero.
-    if (controlInputs[3] == 0):
+    if (controlInputs[5] == 0):
         # calculate motor constants
-        Ac = 0.5 * (controlInputs[0] - controlInputs[1])
-        Bc = 0.5 * (controlInputs[0] + controlInputs[1])
-        Cc = 0.5 * (controlInputs[0] + controlInputs[1])
-        Dc = 0.5 * (controlInputs[0] - controlInputs[1])
+        Ac = 0.5 * (controlInputs[1] + controlInputs[0])
+        Bc = 0.5 * (controlInputs[1] - controlInputs[0])
+        Cc = 0.5 * (controlInputs[1] - controlInputs[0])
+        Dc = 0.5 * (controlInputs[1] + controlInputs[0])
         Ec = controlInputs[2]
         Fc = Ec
         
@@ -73,8 +76,8 @@ def calculate_pwms(controlInputs: Wrench) -> list:
         pwm_transform(controlOutputs, 5, Fc) 
     else:
         # rotation is clockwise based on a positive "R" value.
-        c1 = controlInputs[3] / 2
-        c2 = -1 * c1
+        c1 = controlInputs[5]
+        c2 = -1.0 * c1
         
         pwm_transform(controlOutputs, 0, c2)
         pwm_transform(controlOutputs, 1, c1)
