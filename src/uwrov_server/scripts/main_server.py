@@ -5,7 +5,6 @@ import signal
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
 
-from publishers.channel_pub import ChannelPub
 from publishers.move_pub import MovePub
 
 from subscribers.image_sub import ImageSub
@@ -54,11 +53,6 @@ def send_image_id():
     sio.emit("IDs", {'ids': image_handles}, broadcast=True)
 
 
-@sio.on("Set Camera")
-def set_image_camera(cam_num):
-    publishers['channel_h'].pub.publish(cam_num)
-
-
 @sio.on("Send State")
 def send_move_state(data):
     publishers['move_h'].pub.update_state(data)
@@ -82,7 +76,6 @@ if __name__ == '__main__':
         subinfo.sub = ImageSub(
             subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id, sio)
 
-    publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
 
     # Define a way to exit gracefully
