@@ -43,8 +43,8 @@ services:
           source: ../nautilus_sim/models/nautilus
           target: /root/gzweb/http/client/assets/nautilus
         - type: bind
-          source: ../nautilus_sim/nautilus_worlds
-          target: /root/catkin_ws/src/nautilus_worlds
+          source: ../nautilus_sim/src
+          target: /root/catkin_ws/src
 
 networks:
   nautilus_network:
