@@ -7,10 +7,8 @@ from flask_socketio import SocketIO, send, emit
 
 from publishers.channel_pub import ChannelPub
 from publishers.move_pub import MovePub
-from publishers.user_webcam_pub import UserWebcamPub
 
 from subscribers.image_sub import ImageSub
-from subscribers.user_webcam_sub import UserStream
 
 HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
@@ -40,15 +38,13 @@ image_handles = ['camera_stream', 'img_sub']
 # aux storage to make sure subscriber objects aren't garbage collected
 subscribers = {
     'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
-    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
-    'user_stream_h': SubInfo('/nautilus/cameras/user_webcam', 'Text', None, None)
+    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None)
 }
 
 # Map of handles to rospy pub objects
 publishers = {
     'move_h': PubInfo('/nautilus/motors/commands', None),
-    'channel_h': PubInfo('/nautilus/cameras/switch', None),
-    'user_webcam_h': PubInfo('/nautilus/cameras/user_webcam', None)
+    'channel_h': PubInfo('/nautilus/cameras/switch', None)
 }
 
 
@@ -66,10 +62,6 @@ def set_image_camera(cam_num):
 def send_move_state(data):
     publishers['move_h'].pub.update_state(data)
 
-@sio.on("Send User Webcam Frame")
-def send_user_webcam(blob):
-    publishers['user_webcam_h'].pub.update_video_frame(blob)
-
 
 def shutdown_server(signum, frame):
     rospy.loginfo("Shutting down main server")
@@ -83,10 +75,6 @@ if __name__ == '__main__':
 
     rospy.init_node('surface', log_level=rospy.DEBUG)
 
-    subscribers['user_stream_h'].sub = UserStream(subscribers['user_stream_h'].ros_topic,
-                                        subscribers['user_stream_h'].sio_route,
-                                        sio)
-
     # Register our subscribers and publishers
     for handle in ['camera_h', 'img_h']:
         subinfo = subscribers[handle]
@@ -95,7 +83,6 @@ if __name__ == '__main__':
 
     publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
-    publishers['user_webcam_h'].pub = UserWebcamPub(publishers['user_webcam_h'].ros_topic)
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)
