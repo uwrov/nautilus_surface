@@ -13,7 +13,7 @@ class GUI extends React.Component {
             keybindings: {}
         },
         consoleShow: false,
-        widgets: [new Widget('ROS Camera'), new Widget('Controller')]
+        widgets: [new Widget('ros_camera'), new Widget('controller')]
     };
 
 
