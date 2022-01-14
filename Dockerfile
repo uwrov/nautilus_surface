@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     git curl \
     build-essential \
     python3-pip \
-    netbase
+    netbase net-tools iputils-ping \
+    openssh-client openssh-server
 
 # Install python packages
 COPY requirements.txt /requirements.txt
@@ -40,5 +41,3 @@ RUN echo "source /root/catkin_ws/devel/setup.bash" >> ~/.bashrc
 ENV ROS_LOG_DIR /root/logs
 
 EXPOSE 3000
-
-RUN apt-get install -y net-tools iputils-ping
