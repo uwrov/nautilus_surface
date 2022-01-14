@@ -1,7 +1,16 @@
 <launch>
-  <include file="$(nautilus_launch)/launch/system.launch"/>
+  <machine name="sim" address="sim" password="passwhat" env-loader="/root/ros_setup.sh"/>
+  <include file="$(find nautilus_launch)/launch/system.launch"/>
 
-  <group ns="sim">
-  
-  </group>
+  <!-- launch gzserver -->
+  <node machine="sim" name="gazebo" pkg="gazebo_ros" type="gzserver" args="/root/catkin_ws/src/nautilus_worlds/worlds/underwater.world --verbose"/>
+
+  <!-- spawn in our model -->
+  <node machine="sim" name="model_compiler" pkg="xacro"
+        type="xacro" required="false"
+        args="/root/catkin_ws/src/nautilus_description/urdf/nautilus.urdf.xacro -o /root/catkin_ws/src/nautilus_description/urdf/nautilus.urdf"/>
+  <node machine="sim" name="model_spawner" pkg="gazebo_ros"
+        type="spawn_model" required="false"
+        args="-f /root/catkin_ws/src/nautilus_description/urdf/nautilus.urdf -urdf -model nautilus -z 2"/>
+
 </launch>

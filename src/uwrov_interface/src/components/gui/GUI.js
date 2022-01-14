@@ -7,15 +7,14 @@ import { Widget } from "../widgets/Widget.js";
 import "./GUI.css";
 
 class GUI extends React.Component {
-  state = {
-    websocket: null,
-    settings: {
-      keybindings: {}
-    },
-    consoleShow: false,
-    widgets: [new Widget("ros_camera"), new Widget("controller"),
-    new Widget("script_runner")]
-  };
+    state = {
+        websocket: null,
+        settings: {
+            keybindings: {}
+        },
+        consoleShow: false,
+        widgets: [new Widget('ros_camera'), new Widget('controller')]
+    };
 
 
   addWidget = (widgetName) => {

@@ -5,7 +5,6 @@ import signal
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
 
-from publishers.channel_pub import ChannelPub
 from publishers.move_pub import MovePub
 
 from subscribers.image_sub import ImageSub
@@ -38,24 +37,18 @@ image_handles = ['camera_stream', 'img_sub']
 # aux storage to make sure subscriber objects aren't garbage collected
 subscribers = {
     'camera_h': SubInfo('/nautilus/cameras/stream', 'Image Display', 'camera_stream', None),
-    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None)
+    'img_h': SubInfo('/image/distribute', 'Image Display', 'img_sub', None),
 }
 
 # Map of handles to rospy pub objects
 publishers = {
     'move_h': PubInfo('/nautilus/motors/commands', None),
-    'channel_h': PubInfo('/nautilus/cameras/switch', None)
 }
 
 
 @sio.on("Get IDs")
 def send_image_id():
     sio.emit("IDs", {'ids': image_handles}, broadcast=True)
-
-
-@sio.on("Set Camera")
-def set_image_camera(cam_num):
-    publishers['channel_h'].pub.publish(cam_num)
 
 
 @sio.on("Send State")
@@ -81,7 +74,6 @@ if __name__ == '__main__':
         subinfo.sub = ImageSub(
             subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id, sio)
 
-    publishers['channel_h'].pub = ChannelPub(publishers['channel_h'].ros_topic)
     publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
 
     # Define a way to exit gracefully
