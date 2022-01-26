@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     netbase net-tools iputils-ping \
     openssh-client openssh-server \
-    apt-get install ffmpeg libsm6 libxext6
+    ffmpeg libsm6 libxext6
 
 # Install python packages
 COPY requirements.txt /requirements.txt
