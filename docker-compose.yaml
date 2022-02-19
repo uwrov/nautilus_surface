@@ -2,15 +2,12 @@ version: "3.7"
 
 services:
   surface:
-    network_mode: host
+    network_mode: "host"
     build: ./
     image: nautilus_surface
     container_name: surface
     environment:
       - "ROS_HOSTNAME=surface"
-    ports:
-      - "3000:3000"
-      - "4040:4040"
     stdin_open: true
     tty: true
     volumes:
