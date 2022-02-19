@@ -4,32 +4,33 @@ from std_msgs.msg import MultiArrayDimension
 from std_msgs.msg import MultiArrayLayout
 from std_msgs.msg import Int16MultiArray
 from geometry_msgs.msg import Wrench
-from MotorCode.Control import calculate_pwms
+from PWMCalculator.pwm_calculator import PWMCalculator
 
 """
 ROS motor code driver
 """
 
-#keyboard_topic = '/nautilus/nautilus_motors/wrench'
-listen_topic = '/nautilus/motors/commands'
+listen_topic = '/nautilus/motors/vector'
 publish_topic = '/nautilus/motors/pwm'
 
 dims = [MultiArrayDimension('data', 6, 16)]
 layout = MultiArrayLayout(dim=dims, data_offset=0)
 
 # Calculate pwm to be applied onto each motor and publish to motors
-def drive(wrench_msg, publisher):
-    data = calculate_pwms(wrench_msg)
-    msg = Int16MultiArray(layout=layout, data=data)
+def drive(wrench_msg, controller, publisher):
+    pwm_output = controller.convert_vector_to_pwms(wrench_msg)
+    msg = Int16MultiArray(layout=layout, data=pwm_output)
     publisher.publish(msg)
+
 # launch publisher and subscriber
 def main():
     print('starting publisher on', publish_topic)
     pub = rospy.Publisher(publish_topic, Int16MultiArray, queue_size=1)
 
     print('starting listener on', listen_topic)
+    controller = PWMCalculator()
     rospy.init_node('motors')
-    rospy.Subscriber(listen_topic, Wrench, drive, (pub))
+    rospy.Subscriber(listen_topic, Wrench, drive, (controller, pub))
 
     rospy.on_shutdown(shutdown_fn)
     rospy.spin()
