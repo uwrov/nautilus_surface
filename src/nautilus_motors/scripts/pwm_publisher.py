@@ -17,10 +17,10 @@ dims = [MultiArrayDimension('data', 6, 16)]
 layout = MultiArrayLayout(dim=dims, data_offset=0)
 
 # Calculate pwm to be applied onto each motor and publish to motors
-def drive(wrench_msg, controller, publisher):
-    pwm_output = controller.convert_vector_to_pwms(wrench_msg)
+def drive(wrench_msg, args):
+    pwm_output = args[0](wrench_msg)
     msg = Int16MultiArray(layout=layout, data=pwm_output)
-    publisher.publish(msg)
+    args[1](msg)
 
 # launch publisher and subscriber
 def main():
@@ -30,7 +30,8 @@ def main():
     print('starting listener on', listen_topic)
     controller = PWMCalculator()
     rospy.init_node('motors')
-    rospy.Subscriber(listen_topic, Wrench, drive, (controller, pub))
+    rospy.Subscriber(listen_topic, Wrench, drive,
+                     (controller.convert_vector_to_pwms, pub.publish))
 
     rospy.on_shutdown(shutdown_fn)
     rospy.spin()

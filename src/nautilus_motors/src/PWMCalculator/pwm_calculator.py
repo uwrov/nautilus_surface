@@ -28,7 +28,7 @@ class PWMCalculator:
 
         self.map_power_to_pwm = np.vectorize(f)
 
-    def wrench_to_col(vector: Wrench) -> np.array:
+    def wrench_to_col(self, vector: Wrench) -> np.array:
         return np.array([[vector.force.x, vector.force.y, vector.force.z, vector.torque.x, vector.torque.y, vector.torque.z]]).T
 
     def convert_vector_to_pwms(self, vector: Wrench) -> list:

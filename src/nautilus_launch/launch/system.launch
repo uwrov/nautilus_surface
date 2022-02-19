@@ -3,6 +3,6 @@
     <node name="server" pkg="uwrov_server" type="main_server.py" output="screen"/>
     <node name="interface" pkg="uwrov_interface" type="launch_interface.bash"/>
     
-    <node name="motors" pkg="nautilus_motors" type="motor_driver.py" output="screen"/>
+    <node name="motors" pkg="nautilus_motors" type="pwm_publisher.py" output="screen"/>
   </group>
 </launch>
