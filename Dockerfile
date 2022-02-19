@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     python3-pip \
     netbase net-tools iputils-ping \
-    openssh-client openssh-server
+    openssh-client openssh-server \
+    ffmpeg libsm6 libxext6
 
 # Install python packages
 COPY requirements.txt /requirements.txt
