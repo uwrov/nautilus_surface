@@ -11,7 +11,7 @@
   </group>
 
   <group ns="pi">
-    <node machine="pi" name="pigpio_launcher" pkg="?" type="pig.sh"/>
+    <node machine="pi" name="pigpio_launcher" pkg="uwrov_auto" type="pig.sh"/>
 
     <node machine="pi" name="motor_driver" pkg="uwrov_auto" type="motor_driver.py"/>
   </group>
