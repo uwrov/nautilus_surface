@@ -4,9 +4,10 @@ Nautilus' Surface Control ROS Packages
 
 # How to launch
 
-## 1. Check IP's
+## 1. Check IP's (for SSH access)
+IP's should already be configured for the router used, but in case something went wrong, these are the expected values:
 - Surface computer: `192.168.0.69` (port 22)
-- Raspberry Pi on ROV: `192.168.0.99` (port 69)
+- Raspberry Pi on ROV: `192.168.0.99` (port 69 for the Pi itself, port 22 for the `nautilus_pi` container)
 
 ## 2. On the ROV Raspberry Pi
 
