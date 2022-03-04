@@ -1,7 +1,7 @@
 <launch>
   <arg name="pi_ip" default="192.168.0.99" />
 
-  <machine name="pi" address="$(arg pi_ip)" user="root" password="passwhat" env-loader="/root/catkin_ws/src/load_env.sh"/>
+  <!-- <machine name="pi" address="$(arg pi_ip)" user="root" password="passwhat" env-loader="/root/catkin_ws/src/load_env.sh"/> -->
 
   <group ns="surface_control">
     <node name="server" pkg="uwrov_server" type="main_server.py" output="screen"/>
@@ -10,7 +10,7 @@
     <node name="motors" pkg="nautilus_motors" type="motor_driver.py" output="screen"/>
   </group>
 
-  <group ns="pi">
+  <!-- <group ns="pi">
     <node machine="pi" name="motor_driver" pkg="uwrov_auto" type="motor_driver.py"/>
-  </group>
+  </group> -->
 </launch>
