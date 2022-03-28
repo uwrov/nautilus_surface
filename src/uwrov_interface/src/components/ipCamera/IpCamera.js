@@ -7,7 +7,7 @@ export default class Camera extends React.Component {
     this.socket = require("socket.io-client")("http://localhost:4040");
     this.state = {
       img_src:
-        "https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG-1200-80.jpg",
+        "http://192.168.0.99:8081",
       ip_add_pre: null,
       ip_add_post: null,
       hide: false,
