@@ -1,24 +1,18 @@
 import rospy
 from .subscriber import ServerSub
-from flask_socketio import SocketIO
-from sensor_msgs.msg import CompressedImage
-
 
 class ImageSub(ServerSub):
     """
     Subscriber which receives image data from a ROS camera.
     """
 
-    def __init__(self, topic, sio_route, sio_id, sio):
+    def __init__(self, topic):
         super().__init__(topic, CompressedImage)
-        self.sio_route = sio_route
-        self.sio_id = sio_id
-        self.sio = sio
+        self.image_cache = [] # TODO: Cache last 10 frames
 
     def callback(self, msg):
-        rospy.loginfo("emitting data from ImageSub")
-        packet = {
-            'image': msg.data,
-            'id': self.sio_id
-        }
-        self.sio.emit(self.sio_route, packet, broadcast=True)
+        pass
+        # TODO: Push msg.data onto cache (only 10 frames in cache)
+
+    # TODO: getCurrentFrame -> returns last cached frame
+    # TODO: getAllFrames -> Returns cache
