@@ -13,24 +13,15 @@ class MovePub(ServerPub):
     def __init__(self, topic):
         super().__init__(topic, Wrench, queue_size=10)
         self.msg = Wrench()
-        self.current_state = None
         self.launch_continuous_publisher()
 
-    def update_state(self, state):
-        if (self.current_state is None or state != self.current_state):
-            if (state["ang_x"] != 0 or state["ang_y"] != 0 or state["ang_z"] != 0):
-                state["lin_x"] = 0
-                state["lin_y"] = 0
-                state["lin_z"] = 0
-
-            self.msg.force.x = state["lin_x"]
-            self.msg.force.y = state["lin_y"]
-            self.msg.force.z = state["lin_z"]
-            self.msg.torque.x = state["ang_x"]
-            self.msg.torque.y = state["ang_y"]
-            self.msg.torque.z = state["ang_z"]
-
-            self.current_state = state
+    def set_velocity(self, linear, angular=[0, 0, 0]):
+        self.msg.force.x = linear[0]
+        self.msg.force.y = linear[1]
+        self.msg.force.z = linear[2]
+        self.msg.torque.x = angular[0]
+        self.msg.torque.y = angular[1]
+        self.msg.torque.z = angular[2]
 
     def publish(self):
         self.publisher.publish(self.msg)

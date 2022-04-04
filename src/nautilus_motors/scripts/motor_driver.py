@@ -22,6 +22,7 @@ def drive(wrench_msg, publisher):
     data = calculate_pwms(wrench_msg)
     msg = Int16MultiArray(layout=layout, data=data)
     publisher.publish(msg)
+    
 # launch publisher and subscriber
 def main():
     print('starting publisher on', publish_topic)

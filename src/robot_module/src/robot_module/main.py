@@ -1,19 +1,20 @@
 import rospy
-from subscribers.image_sub import ImageSub
-from publishers.move_pub import MovePub
+from .subscribers.image_sub import ImageSub
+from .publishers.move_pub import MovePub
 
 # Service topics
 publisher_topics = {
-    "movement": MovePub("/nautilus/motors/commands"),
+    "movement": lambda : MovePub("/nautilus/motors/commands"),
 }
 subscriber_topics = {
-    "cameras": ImageSub("/nautilus/cameras/stream"),
-    "img_h": ImageSub("/image/distribute")
+    "cameras": lambda : ImageSub("/nautilus/cameras/stream"),
+    "img_h": lambda : ImageSub("/image/distribute")
 }
 
 
 class RobotModule:
-    def __init__(self):
+    def __init__(self, name):
+        rospy.init_node(name, log_level=rospy.DEBUG)
         self.active_services = {}
 
     def setup(self, service):
@@ -28,14 +29,15 @@ class RobotModule:
             print(e)
 
     # Robot motor API
-    def set_vel(self, vector):
+    def set_vel(self, linear, angular=[0, 0, 0]):
         try:
             if "movement" in self.active_services:
-                self.active_services["movement"].update_state(vector)
+                self.active_services["movement"].set_velocity(linear, angular)
             else:
                 print("[ERROR]: Movement not active yet")
         except Exception as e:
             print(e)
+
 
     def sit(self, time):
         try:
@@ -70,7 +72,7 @@ class RobotModule:
     def kill_motors(self):
         try:
             if "movement" in self.active_services:
-                # TODO: Implement
+                #self.active_services["movement"].update_state(0, 0, 0)
                 pass
             else:
                 print("[ERROR]: Movement not active yet")
@@ -98,26 +100,6 @@ class RobotModule:
             print(e)
 
     def set_accel(self, vector):
-        try:
-            if "movement" in self.active_services:
-                # TODO: Implement
-                pass
-            else:
-                print("[ERROR]: Movement not active yet")
-        except Exception as e:
-            print(e)
-
-    def start_api(self):
-        try:
-            if "movement" in self.active_services:
-                # TODO: Implement
-                pass
-            else:
-                print("[ERROR]: Movement not active yet")
-        except Exception as e:
-            print(e)
-
-    def stop_api(self):
         try:
             if "movement" in self.active_services:
                 # TODO: Implement
