@@ -1,19 +1,16 @@
 import rospy
-from .subscribers.image_sub import ImageSub
-from .publishers.move_pub import MovePub
-from .publishers.lock_pub import LockPub
-from .subscribers.lock_sub import LockSub
+from .services.movement import Movement
 
 # Service topics
-publisher_topics = {
-    "movement": lambda node_name: MovePub("/nautilus/motors/commands",
-                                          node_name)
-}
-subscriber_topics = {
-    "cameras": lambda: ImageSub("/nautilus/cameras/stream"),
-    "img_h": lambda: ImageSub("/image/distribute")
-}
+# subscriber_topics = {
+#    "cameras": lambda: ImageSub("/nautilus/cameras/stream"),
+#    "img_h": lambda: ImageSub("/image/distribute")
+#}
 
+# Available Services
+services = {
+    "movement": lambda node_name: Movement(node_name)
+}
 
 class RobotModule:
     def __init__(self, name):
@@ -23,16 +20,15 @@ class RobotModule:
 
     def setup(self, service):
         try:
-            if service in publisher_topics:  # Service is a publisher
-                self.active_services[service] = publisher_topics[service]()
-            elif service in subscriber_topics:  # Service is a subscriber
-                self.active_services[service] = subscriber_topics[service]()
+            if service in services:  # Service is a publisher
+                self.active_services[service] = services[service](self.name)
+                self.active_services[service].setup()
             else:
                 print("[ERROR]: Service not found")
         except Exception as e:
             print(e)
 
-    def run_if_service(self, service, func):
+    def __run_if_service(self, service, func):
         """
         Runs a function if the service is active
         :param service: Service name
@@ -47,7 +43,7 @@ class RobotModule:
             print(e)
 
     def request_priority(self):
-        self.run_if_service("movement",
+        self.__run_if_service("movement",
                             lambda: self.active_services[
                                 "movement"].request_priority()
                             )
@@ -59,9 +55,9 @@ class RobotModule:
         :param linear: [float, float, float] Linear velocity
         :param angular: [float, float, float] Angular velocity
         """
-        self.run_if_service("movement",
+        self.__run_if_service("movement",
                             lambda: self.active_services[
-                                "movement"].set_vel(linear, angular)
+                                "movement"].set_velocity(linear, angular)
                             )
 
     def sit(self, time):
