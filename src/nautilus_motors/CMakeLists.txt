@@ -24,7 +24,7 @@ include_directories(
 catkin_python_setup()
 
 catkin_install_python(PROGRAMS
-  scripts/motor_driver.py
+  scripts/pwm_publisher.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

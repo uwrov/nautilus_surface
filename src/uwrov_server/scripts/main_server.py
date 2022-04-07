@@ -42,7 +42,7 @@ subscribers = {
 
 # Map of handles to rospy pub objects
 publishers = {
-    'move_h': PubInfo('/nautilus/motors/commands', None),
+    'move_h': PubInfo('/nautilus/motors/vector', None),
 }
 
 
