@@ -64,7 +64,6 @@ class Movement(Service):
 
     def publish(self):
         self.move_pub.publish(self.msg)
-        print(self.msg)
 
 
     def publish_continuous(self, rate: int):
