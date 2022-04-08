@@ -20,11 +20,11 @@ class PWMCalculator:
 
         def f(x):
             if x < 0:
-                return np.interp(x, [-1, 0], [1100, 1475])
+                return int(np.interp(x, [-1, 0], [1100, 1475]))
             elif x > 0:
-                return np.interp(x, [0, 1], [1525, 1900])
+                return int(np.interp(x, [0, 1], [1525, 1900]))
             else:
-                return 0
+                return 1500
 
         self.map_power_to_pwm = np.vectorize(f)
 
