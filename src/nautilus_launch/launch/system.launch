@@ -4,7 +4,8 @@
   <machine name="pi" address="$(arg pi_ip)" user="root" password="passwhat" env-loader="/root/catkin_ws/src/load_env.sh"/>
 
   <group ns="surface_control">
-    <node name="server" pkg="uwrov_server" type="main_server.py" output="screen"/>
+    <!-- <node name="server" pkg="uwrov_server" type="main_server.py" output="screen"/>
+    -->
     <node name="interface" pkg="uwrov_interface" type="launch_interface.bash"/>
     
     <node name="motors" pkg="nautilus_motors" type="pwm_publisher.py" output="screen"/>

@@ -1,6 +1,6 @@
 <launch>
   <machine name="sim" address="sim" password="passwhat" env-loader="/root/ros_setup.sh"/>
-  <include file="$(find nautilus_launch)/launch/system.launch"/>
+  <include file="$(find nautilus_launch)/launch/surface.launch"/>
 
   <!-- launch gzserver -->
   <node machine="sim" name="gazebo" pkg="gazebo_ros" type="gzserver" args="/root/catkin_ws/src/nautilus_worlds/worlds/underwater.world --verbose"/>

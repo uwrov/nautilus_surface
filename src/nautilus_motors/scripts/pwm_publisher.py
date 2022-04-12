@@ -10,7 +10,7 @@ from PWMCalculator.pwm_calculator import PWMCalculator
 ROS motor code driver
 """
 
-listen_topic = '/nautilus/motors/vector'
+listen_topic = '/nautilus/motors/commands'
 publish_topic = '/nautilus/motors/pwm'
 
 dims = [MultiArrayDimension('data', 6, 16)]
