@@ -1,36 +1,19 @@
 #!/usr/bin/env python3
-import rospy
-import threading
 import signal
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
 
-from publishers.move_pub import MovePub
-
-from subscribers.image_sub import ImageSub
+from robot_module import RobotModule
 
 HOST_IP = "0.0.0.0"
 HOST_PORT = 4040
 
 
-class SubInfo:
-    def __init__(self, ros_topic, sio_route, sio_id, sub):
-        self.ros_topic = ros_topic
-        self.sio_route = sio_route
-        self.sio_id = sio_id
-        self.sub = sub
-
-
-class PubInfo:
-    def __init__(self, ros_topic, pub):
-        self.ros_topic = ros_topic
-        self.pub = pub
-
-
 app = Flask(__name__)
 sio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
-
+robot = None
+'''
 # Maps socketio image id to ROS topic name
 image_handles = ['camera_stream', 'img_sub']
 
@@ -44,41 +27,33 @@ subscribers = {
 publishers = {
     'move_h': PubInfo('/nautilus/motors/vector', None),
 }
-
+'''
 
 @sio.on("Get IDs")
 def send_image_id():
-    sio.emit("IDs", {'ids': image_handles}, broadcast=True)
+    #sio.emit("IDs", {'ids': image_handles}, broadcast=True)
+    pass
 
 
 @sio.on("Send State")
 def send_move_state(data):
-    publishers['move_h'].pub.update_state(data)
+    robot.request_priority()
+    robot.set_vel(data["linear"], data["angular"])
+    #publishers['move_h'].pub.update_state(data)
 
 
 def shutdown_server(signum, frame):
-    rospy.loginfo("Shutting down main server")
     sio.stop()
     exit(signal.SIGTERM)
 
 
 if __name__ == '__main__':
     """ Sets up rospy and starts servers """
-    rospy.loginfo("main server is running")
-
-    rospy.init_node('surface', log_level=rospy.DEBUG)
-
-    # Register our subscribers and publishers
-    for handle in ['camera_h', 'img_h']:
-        subinfo = subscribers[handle]
-        subinfo.sub = ImageSub(
-            subinfo.ros_topic, subinfo.sio_route, subinfo.sio_id, sio)
-
-    publishers['move_h'].pub = MovePub(publishers['move_h'].ros_topic)
+    robot = RobotModule("surface")
+    robot.setup("movement")
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)
 
-    # Start the ROS services and sio server
-    threading.Thread(target=rospy.spin, daemon=True).start()
+    # Start sio server
     sio.run(app, host=HOST_IP, port=HOST_PORT)

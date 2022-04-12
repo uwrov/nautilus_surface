@@ -33,8 +33,7 @@ class Movement(Service):
 
 
     def setup(self):
-        self.launch_continuous_publisher()
-
+        pass
 
     # Movement Priority Determinants
     def request_priority(self):
@@ -58,22 +57,8 @@ class Movement(Service):
             self.msg.torque.x = angular[0]
             self.msg.torque.y = angular[1]
             self.msg.torque.z = angular[2]
-            print("moving")
-            print(self.msg)
+            self.publish()
 
 
     def publish(self):
         self.move_pub.publish(self.msg)
-
-
-    def publish_continuous(self, rate: int):
-        r = rospy.Rate(rate)
-        while not rospy.is_shutdown():
-            self.publish()
-            r.sleep()
-
-
-    def launch_continuous_publisher(self):
-        self.publisher_thread = threading.Thread(
-            target=self.publish_continuous, args=(20,), daemon=True)
-        self.publisher_thread.start()

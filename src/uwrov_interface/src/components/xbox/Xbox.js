@@ -33,16 +33,8 @@ export default class Xbox extends React.Component {
   };
 
   vect = {
-    lin_x: 0,
-    lin_y: 0,
-    lin_z: 0,
-    ang_x: 0,
-    ang_y: 0,
-    ang_z: 0,
-    a: 0,
-    b: 0,
-    x: 0,
-    y: 0,
+    linear: [0, 0, 0],
+    angular: [0, 0, 0]
   }
 
   camera_index = 0;
@@ -122,12 +114,14 @@ export default class Xbox extends React.Component {
     }
 
     this.vect = {
-      lin_x: this.state.LeftStickX,
-      lin_y: this.state.LeftStickY,
-      lin_z: this.state.RightStickY,
-      ang_x: 0,
-      ang_y: 0,
-      ang_z: temp_ang_z,
+      linear: [
+        this.state.LeftStickX,
+        this.state.LeftStickY,
+        this.state.RightStickY
+      ],
+      angular: [
+        0, 0, temp_ang_z
+      ]
     }
   }
 
