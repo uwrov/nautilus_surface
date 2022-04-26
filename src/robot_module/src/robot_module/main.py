@@ -47,8 +47,9 @@ class RobotModule:
 
     def arm_motors(self):
         self.__run_if_service("movement",
-                            lamda: self.active_services[
+                            lambda: self.active_services[
                                 "movement"].arm()
+                            )
 
 
     def request_priority(self):
