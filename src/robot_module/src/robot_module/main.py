@@ -18,6 +18,7 @@ class RobotModule:
         self.active_services = {}
         self.name = name
 
+
     def setup(self, service):
         try:
             if service in services:  # Service is a publisher
@@ -27,6 +28,7 @@ class RobotModule:
                 print("[ERROR]: Service not found")
         except Exception as e:
             print(e)
+
 
     def __run_if_service(self, service, func):
         """
@@ -42,11 +44,19 @@ class RobotModule:
         except Exception as e:
             print(e)
 
+
+    def arm_motors(self):
+        self.__run_if_service("movement",
+                            lamda: self.active_services[
+                                "movement"].arm()
+
+
     def request_priority(self):
         self.__run_if_service("movement",
                             lambda: self.active_services[
                                 "movement"].request_priority()
                             )
+
 
     # Robot motor API
     def set_vel(self, linear, angular=[0, 0, 0]):
@@ -60,6 +70,7 @@ class RobotModule:
                                 "movement"].set_velocity(linear, angular)
                             )
 
+
     def sit(self, time):
         """
         Sits the robot for a certain amount of time
@@ -68,12 +79,14 @@ class RobotModule:
         # TODO: Implement
         pass
 
+
     def stabilize(self):
         """
         Stabilize the ROV
         """
         # TODO: Implement
         pass
+
 
     def lock(self, axis):
         """
@@ -83,12 +96,14 @@ class RobotModule:
         # TODO: Implement
         pass
 
+
     def kill_motors(self):
         """
         Kills the motors
         """
         # TODO: Implement
         pass
+
 
     def displace(self, vector):
         """
@@ -98,6 +113,7 @@ class RobotModule:
         # TODO: Implement
         pass
 
+
     def rotate(self, vector):
         """
         Rotate the ROV by a certain vector
@@ -105,6 +121,7 @@ class RobotModule:
         """
         # TODO: Implement
         pass
+
 
     def set_accel(self, vector):
         """
