@@ -13,15 +13,18 @@ from std_msgs.msg import String
 
 topic = "/nautilus/motors/commands"
 lock_topic = "/nautilus/motors/lock"
+arm_topic = "/nautilus/motors/arm"
 
 
 class Movement(Service):
     """
-    Publisher for movement commands, dictated by current state of the xbox controller
+    Functionalities related to the motors on the robot.
     """
     def __init__(self, node_name):
         super().__init__(node_name)
         self.msg = Wrench()
+        
+        self.arm_pub = rospy.Publisher(arm_topic, String, queue_size=1)
 
         self.lock_pub = rospy.Publisher(lock_topic, String, queue_size=1)
         self.lock_sub = rospy.Subscriber(lock_topic, String,
@@ -34,6 +37,7 @@ class Movement(Service):
 
     def setup(self):
         pass
+
 
     # Movement Priority Determinants
     def request_priority(self):
@@ -48,7 +52,7 @@ class Movement(Service):
         self.priority_node = prio_node.data
 
 
-    # Movement Logic
+    # Publishing movement commands to ROS
     def set_velocity(self, linear, angular=[0, 0, 0]):
         if self.has_priority():
             self.msg.force.x = linear[0]
@@ -58,6 +62,10 @@ class Movement(Service):
             self.msg.torque.y = angular[1]
             self.msg.torque.z = angular[2]
             self.publish()
+
+
+    def arm(self):
+        self.arm_pub.publish("arm")
 
 
     def publish(self):
