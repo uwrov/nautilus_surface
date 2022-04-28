@@ -42,6 +42,11 @@ def send_move_state(data):
     #publishers['move_h'].pub.update_state(data)
 
 
+@sio.on("Arm Motors")
+def arm_motors(data):
+    print("arming motors")
+    robot.arm_motors()
+
 def shutdown_server(signum, frame):
     sio.stop()
     exit(signal.SIGTERM)

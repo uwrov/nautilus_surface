@@ -75,6 +75,10 @@ export default class Xbox extends React.Component {
     let change = {};
     change[buttonName] = pressed;
     this.setState(change);
+    
+    if(pressed && buttonName == "Start") {
+      socket.emit("Arm Motors", "please");
+    }
   }
 
   getTriggerStyle(value) {
