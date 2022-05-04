@@ -110,25 +110,29 @@ export default class Xbox extends React.Component {
   }
 
   updateVects() {
-    let temp_z = 0;
+    let tempZ = 0;
     if (this.state.LeftTrigger != 0) {
-      temp_z = this.state.LeftTrigger;
+      tempZ = -1 * this.state.LeftTrigger;
     } else if (this.state.RightTrigger != 0) {
-      temp_z = -1 * this.state.RightTrigger;
+      tempZ = this.state.RightTrigger;
     }
-
     this.vect = {
       linear: [
         0.0,
-        -1 * this.state.LeftStickY,
-      	temp_z
+        -1 * this.deadzone(this.state.LeftStickY),
+      	tempZ
       ],
       angular: [
-        0.1 * this.state.RightStickY,
-	-0.1 * this.state.RightStickX,
-	-0.1 * this.state.LeftStickX
+        0.1 * this.deadzone(this.state.RightStickY),
+	0.1 * this.deadzone(this.state.RightStickX),
+	0.1 * this.deadzone(this.state.LeftStickX)
       ]
     }
+  }
+  
+  deadzone(value, tol=0.2) {
+    if(Math.abs(value) < tol) return 0;
+    return value;
   }
 
   updateCameraIndex() {
