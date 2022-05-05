@@ -112,20 +112,20 @@ export default class Xbox extends React.Component {
   updateVects() {
     let tempZ = 0;
     if (this.state.LeftTrigger != 0) {
-      tempZ = -1 * this.state.LeftTrigger;
+      tempZ = -2 * this.state.LeftTrigger;
     } else if (this.state.RightTrigger != 0) {
-      tempZ = this.state.RightTrigger;
+      tempZ = 2 * this.state.RightTrigger;
     }
     this.vect = {
       linear: [
         0.0,
-        -1 * this.deadzone(this.state.LeftStickY),
+        -2 * this.deadzone(this.state.LeftStickY),
       	tempZ
       ],
       angular: [
-        0.1 * this.deadzone(this.state.RightStickY),
-	0.1 * this.deadzone(this.state.RightStickX),
-	0.1 * this.deadzone(this.state.LeftStickX)
+        0.3 * this.deadzone(this.state.RightStickY),
+	0.3 * this.deadzone(this.state.RightStickX),
+	0.3 * this.deadzone(this.state.LeftStickX)
       ]
     }
   }
