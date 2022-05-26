@@ -1,0 +1,27 @@
+@startuml Locking Service Sequence Diagram
+title Locking Service Sequence Diagram
+participant Auto_Script as auto
+participant UI as ui
+participant Lock_Service as ls
+
+ls -> ui : Sends enable message over topic
+
+...
+
+auto -> ls : Sends a lock request
+ls -> ui : Send disable message over topic
+ls --> auto : Send lock confirmation
+
+...
+
+Second_Auto_Script -> ls : Sends lock request
+return Send failure message
+Second_Auto_Script -> Second_Auto_Script : Periodically ping\nto try and get lock
+
+...
+
+auto -> ls : Send lock release message
+return : Acknowledge lock release (no need to wait)
+auto -> ui : Send enable message over topic
+
+@enduml
