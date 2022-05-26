@@ -195,6 +195,8 @@ include_directories(
 
 catkin_install_python(PROGRAMS
    scripts/test.py
+   scripts/example_lock_client.py
+   scripts/lock_server.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
