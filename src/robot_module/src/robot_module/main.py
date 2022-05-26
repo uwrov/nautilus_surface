@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
+
 import rospy
-from .services.movement import Movement
+from services.movement import Movement
 
 # Service topics
 # subscriber_topics = {

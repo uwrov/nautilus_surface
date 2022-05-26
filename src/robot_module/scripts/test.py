@@ -1,4 +1,6 @@
-from robot_module import RobotModule
+#!/usr/bin/env python3
+
+from robot_module.main import RobotModule
 import time
 
 robot = RobotModule("test")
