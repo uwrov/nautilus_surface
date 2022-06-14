@@ -1,6 +1,7 @@
 import rospy
 from .services.movement import Movement
 from .services.images import RobotImages
+from .services.manipulator import Manipulator
 
 # Service topics
 # subscriber_topics = {

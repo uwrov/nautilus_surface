@@ -42,4 +42,4 @@ class Manipulator(Service):
 
     def publish(self):
         self._throttle()
-        self.move_pub.publish(self.msg)
+        self.mani_pub.publish(self.msg)
