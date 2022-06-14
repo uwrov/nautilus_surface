@@ -21,7 +21,11 @@ const CONTROLLER_FUCTIONS = {
     return commands},
   'ZAngular': (state, commands) => {
     commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
-    return commands},
+    return commands}
+  }
+};
+
+const REQUIRES_CONTINUOUS_PULLING = {
   'Manipulator': (state, commands) => {
     if (state.A) commands.manipulator = 100
     if (state.B) commands.manipulator = 0
@@ -30,8 +34,7 @@ const CONTROLLER_FUCTIONS = {
     commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
     commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
     return commands}
-  }
-};
+}
 
 const deadzone = (value, tol=0.2) => {
   if(Math.abs(value) < tol) return 0;
@@ -101,7 +104,8 @@ export default class Xbox extends React.Component {
     super();
     this.handleChange = this.handleChange.bind(this);
     this.handleAxis = this.handleAxis.bind(this);
-    console.log("hello there")
+
+    this.continuousCheck = setInterval(()=>handleControllerFunctions(REQUIRES_CONTINUOUS_PULLING), 20)
   }
 
   handleChange(buttonName, pressed) {
@@ -143,7 +147,7 @@ export default class Xbox extends React.Component {
     }
   }
 
-  updateBehavior() {
+  handleControllerFunctions(functionHash) {
     let tempCommands = {
       movement: {
         linear: [0,0,0],
@@ -151,13 +155,12 @@ export default class Xbox extends React.Component {
       },
       manipulator: this.manipulator
     }
-    for (let key in CONTROLLER_FUCTIONS) {
-      tempCommands = CONTROLLER_FUCTIONS[key](this.state, tempCommands);
+    for (let key in functionHash) {
+      tempCommands = functionHash[key](this.state, tempCommands);
     }
     this.vect = tempCommands.movement;
     this.manipulator = tempCommands.manipulator;
   }
-
 
   updateCameraIndex() {
       let currIndex = this.camera_index;
@@ -174,7 +177,7 @@ export default class Xbox extends React.Component {
 
   componentDidUpdate() {
     //this.updateVects();
-    this.updateBehavior();
+    this.handleControllerFunctions(CONTROLLER_FUCTIONS);
     this.updateCameraIndex();
     console.log('sending state');
     console.log(this.vect);
