@@ -1,10 +1,35 @@
 import React from "react";
 import "./Xbox.css";
 import Gamepad from "react-gamepad";
-import Draggable from "react-draggable";
+// import Draggable from "react-draggable";
 
 const socket = require("socket.io-client")("http://localhost:4040");
 const AXIS_THROTTLE = 10;
+const CONTROLLER_FUCTIONS = {
+  'RightTrigger': (state, vect) => {
+    vect.movement.linear[2] = -3 * state.RightTrigger;
+    return vect},
+  'LeftTrigger': (state, vect) => {
+    vect.movement.linear[2] = 2 * state.RightTrigger;
+    return vect},
+  'LeftStickY': (state, vect) => {
+    vect.movement.linear[1] = -2 * deadzone(state.LeftStickY)
+    return vect},
+  'RightStickY': (state, vect) => {
+    vect.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
+    return vect},
+  'RightStickX': (state, vect) => {
+    vect.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
+    return vect},
+  'LeftStickX': (state, vect) => {
+    vect.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
+    return vect},
+};
+
+const deadzone = (value, tol=0.2) => {
+  if(Math.abs(value) < tol) return 0;
+  return value;
+}
 
 export default class Xbox extends React.Component {
   state = {
@@ -109,31 +134,19 @@ export default class Xbox extends React.Component {
     }
   }
 
-  updateVects() {
-    let tempZ = 0;
-    if (this.state.LeftTrigger != 0) {
-      tempZ = -2 * this.state.LeftTrigger;
-    } else if (this.state.RightTrigger != 0) {
-      tempZ = 2 * this.state.RightTrigger;
+  updateBehavior() {
+    let tempVect = {
+      movement: {
+        linear: [0,0,0],
+        angular: [0,0,0],
+      }
     }
-    this.vect = {
-      linear: [
-        0.0,
-        -2 * this.deadzone(this.state.LeftStickY),
-      	tempZ
-      ],
-      angular: [
-        0.3 * this.deadzone(this.state.RightStickY),
-	0.3 * this.deadzone(this.state.RightStickX),
-	0.3 * this.deadzone(this.state.LeftStickX)
-      ]
+    for (let key in CONTROLLER_FUCTIONS) {
+      tempVect = CONTROLLER_FUCTIONS[key](this.state, tempVect);
     }
+    this.vect = tempVect.movement;
   }
-  
-  deadzone(value, tol=0.2) {
-    if(Math.abs(value) < tol) return 0;
-    return value;
-  }
+
 
   updateCameraIndex() {
       let currIndex = this.camera_index;
@@ -149,9 +162,11 @@ export default class Xbox extends React.Component {
   }
 
   componentDidUpdate() {
-    this.updateVects();
+    //this.updateVects();
+    this.updateBehavior();
     this.updateCameraIndex();
     console.log('sending state');
+    console.log(this.vect);
     socket.emit("Send State", this.vect);
   }
 
