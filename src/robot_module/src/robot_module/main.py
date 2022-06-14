@@ -1,5 +1,6 @@
 import rospy
 from .services.movement import Movement
+from .services.images import RobotImages
 
 # Service topics
 # subscriber_topics = {
@@ -9,7 +10,9 @@ from .services.movement import Movement
 
 # Available Services
 services = {
-    "movement": lambda node_name: Movement(node_name)
+    "movement": lambda node_name: Movement(node_name),
+    "manipulator": lambda node_name: Manipulator(node_name),
+    "images": lambda node_name: RobotImages(node_name)
 }
 
 class RobotModule:
@@ -56,6 +59,18 @@ class RobotModule:
         self.__run_if_service("movement",
                             lambda: self.active_services[
                                 "movement"].request_priority()
+                            )
+
+
+    def set_angle(self, percentage):
+        """
+        Sets the percentage of how open the manipulator is open
+        100 being maximum and 0 being minimum
+        :param percentage: int percentage of manipulator being open
+        """
+        self.__run_if_service("manipulator",
+                            lambda: self.active_services["manipulator"]
+                                .set_angle(percentage)
                             )
 
 
@@ -130,4 +145,20 @@ class RobotModule:
         :param vector: [float, float, float] Acceleration vector
         """
         # TODO: Implement
+        pass
+
+
+    def get_image(self, index=0):
+        """
+        Returns the current camera image available from the robot.
+        :param int: index of the image
+        """
+        # TODO: Implement
+        pass
+
+
+    def add_image_listener(self, listener, index=0):
+        """
+        Ret
+        """
         pass
