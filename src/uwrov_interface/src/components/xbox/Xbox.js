@@ -6,24 +6,31 @@ import Gamepad from "react-gamepad";
 const socket = require("socket.io-client")("http://localhost:4040");
 const AXIS_THROTTLE = 10;
 const CONTROLLER_FUCTIONS = {
-  'RightTrigger': (state, vect) => {
-    vect.movement.linear[2] = -3 * state.RightTrigger;
+  'ZLinear': (state, commands) => {
+    commands.movement.linear[2] = -3 * state.LeftTrigger;
+    if (state.RightTrigger != 0) commands.movement.linear[2] = 2 * state.RightTrigger;
+    return commands},
+  'YLinear': (state, commands) => {
+    commands.movement.linear[1] = -2 * deadzone(state.LeftStickY)
     return vect},
-  'LeftTrigger': (state, vect) => {
-    vect.movement.linear[2] = 2 * state.RightTrigger;
-    return vect},
-  'LeftStickY': (state, vect) => {
-    vect.movement.linear[1] = -2 * deadzone(state.LeftStickY)
-    return vect},
-  'RightStickY': (state, vect) => {
-    vect.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
-    return vect},
-  'RightStickX': (state, vect) => {
-    vect.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
-    return vect},
-  'LeftStickX': (state, vect) => {
-    vect.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
-    return vect},
+  'XAngular': (state, commands) => {
+    commands.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
+    return commands},
+  'YAngular': (state, commands) => {
+    commands.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
+    return commands},
+  'ZAngular': (state, commands) => {
+    commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
+    return commands},
+  'Manipulator': (state, commands) => {
+    if (state.A) commands.manipulator = 100
+    if (state.B) commands.manipulator = 0
+    if (state.LB) commands.manipulator += 1
+    if (state.RB) commands.manipulator -= 1
+    commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
+    commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
+    return commands}
+  }
 };
 
 const deadzone = (value, tol=0.2) => {
@@ -61,6 +68,8 @@ export default class Xbox extends React.Component {
     linear: [0, 0, 0],
     angular: [0, 0, 0]
   }
+
+  manipulator = 100
 
   camera_index = 0;
 
@@ -100,7 +109,7 @@ export default class Xbox extends React.Component {
     let change = {};
     change[buttonName] = pressed;
     this.setState(change);
-    
+
     if(pressed && buttonName == "Start") {
       socket.emit("Arm Motors", "please");
     }
@@ -135,16 +144,18 @@ export default class Xbox extends React.Component {
   }
 
   updateBehavior() {
-    let tempVect = {
+    let tempCommands = {
       movement: {
         linear: [0,0,0],
         angular: [0,0,0],
-      }
+      },
+      manipulator: this.manipulator
     }
     for (let key in CONTROLLER_FUCTIONS) {
-      tempVect = CONTROLLER_FUCTIONS[key](this.state, tempVect);
+      tempCommands = CONTROLLER_FUCTIONS[key](this.state, tempCommands);
     }
-    this.vect = tempVect.movement;
+    this.vect = tempCommands.movement;
+    this.manipulator = tempCommands.manipulator;
   }
 
 
@@ -167,7 +178,8 @@ export default class Xbox extends React.Component {
     this.updateCameraIndex();
     console.log('sending state');
     console.log(this.vect);
-    socket.emit("Send State", this.vect);
+    socket.emit("Send Movement", this.vect);
+    socket.emit("Send Manipulator", this.manipulator)
   }
 
   render() {

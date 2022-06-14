@@ -35,17 +35,23 @@ def send_image_id():
     pass
 
 
-@sio.on("Send State")
+@sio.on("Send Movement")
 def send_move_state(data):
     robot.request_priority()
     robot.set_vel(data["linear"], data["angular"])
     #publishers['move_h'].pub.update_state(data)
 
 
+@sio.on("Send Manipulator")
+def send_move_state(data):
+    robot.set_angle(data)
+
+
 @sio.on("Arm Motors")
 def arm_motors(data):
     print("arming motors")
     robot.arm_motors()
+
 
 def shutdown_server(signum, frame):
     sio.stop()
@@ -56,6 +62,7 @@ if __name__ == '__main__':
     """ Sets up rospy and starts servers """
     robot = RobotModule("surface")
     robot.setup("movement")
+    robot.setup("manipulator")
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)
