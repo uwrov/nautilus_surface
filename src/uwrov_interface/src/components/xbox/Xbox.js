@@ -28,8 +28,8 @@ const REQUIRES_CONTINUOUS_PULLING = {
   'Manipulator': (state, commands) => {
     if (state.A) commands.manipulator = 100
     if (state.B) commands.manipulator = 0
-    if (state.LB) commands.manipulator += 2
-    if (state.RB) commands.manipulator -= 2
+    if (state.LB) commands.manipulator += 1
+    if (state.RB) commands.manipulator -= 1
     commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
     commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
     return commands}

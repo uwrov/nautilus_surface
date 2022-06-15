@@ -12,5 +12,6 @@
 
   <group ns="pi">
     <node machine="pi" name="motor_driver" pkg="uwrov_auto" type="motor_driver.py"/>
+    <node machine="pi" name="manipulator_driver" pkg="uwrov_manipulator" type="manipulator_driver.py"/>
   </group>
 </launch>
