@@ -34,3 +34,9 @@ catkin_install_python(PROGRAMS
   scripts/coral_bleaching/coral_bleaching_runner.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+# go forward
+catkin_install_python(PROGRAMS
+  scripts/go_forward/go_forward.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
