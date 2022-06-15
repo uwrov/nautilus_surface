@@ -12,7 +12,7 @@ const CONTROLLER_FUCTIONS = {
     return commands},
   'YLinear': (state, commands) => {
     commands.movement.linear[1] = -2 * deadzone(state.LeftStickY)
-    return vect},
+    return commands},
   'XAngular': (state, commands) => {
     commands.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
     return commands},
@@ -22,15 +22,14 @@ const CONTROLLER_FUCTIONS = {
   'ZAngular': (state, commands) => {
     commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
     return commands}
-  }
 };
 
 const REQUIRES_CONTINUOUS_PULLING = {
   'Manipulator': (state, commands) => {
     if (state.A) commands.manipulator = 100
     if (state.B) commands.manipulator = 0
-    if (state.LB) commands.manipulator += 1
-    if (state.RB) commands.manipulator -= 1
+    if (state.LB) commands.manipulator += 2
+    if (state.RB) commands.manipulator -= 2
     commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
     commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
     return commands}
@@ -105,7 +104,7 @@ export default class Xbox extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleAxis = this.handleAxis.bind(this);
 
-    this.continuousCheck = setInterval(()=>handleControllerFunctions(REQUIRES_CONTINUOUS_PULLING), 20)
+    this.continuousCheck = setInterval(()=>this.handleControllerFunctions(REQUIRES_CONTINUOUS_PULLING), 20)
   }
 
   handleChange(buttonName, pressed) {
@@ -149,10 +148,7 @@ export default class Xbox extends React.Component {
 
   handleControllerFunctions(functionHash) {
     let tempCommands = {
-      movement: {
-        linear: [0,0,0],
-        angular: [0,0,0],
-      },
+      movement: this.vect,
       manipulator: this.manipulator
     }
     for (let key in functionHash) {
@@ -160,6 +156,8 @@ export default class Xbox extends React.Component {
     }
     this.vect = tempCommands.movement;
     this.manipulator = tempCommands.manipulator;
+
+    this.sendCommands()
   }
 
   updateCameraIndex() {
@@ -179,10 +177,12 @@ export default class Xbox extends React.Component {
     //this.updateVects();
     this.handleControllerFunctions(CONTROLLER_FUCTIONS);
     this.updateCameraIndex();
-    console.log('sending state');
-    console.log(this.vect);
+  }
+
+
+  sendCommands() {
     socket.emit("Send Movement", this.vect);
-    socket.emit("Send Manipulator", this.manipulator)
+    socket.emit("Send Manipulator", this.manipulator);
   }
 
   render() {
