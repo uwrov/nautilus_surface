@@ -1,10 +1,44 @@
 import React from "react";
 import "./Xbox.css";
 import Gamepad from "react-gamepad";
-import Draggable from "react-draggable";
+// import Draggable from "react-draggable";
 
 const socket = require("socket.io-client")("http://localhost:4040");
 const AXIS_THROTTLE = 10;
+const CONTROLLER_FUCTIONS = {
+  'ZLinear': (state, commands) => {
+    commands.movement.linear[2] = -3 * state.LeftTrigger;
+    if (state.RightTrigger != 0) commands.movement.linear[2] = 2 * state.RightTrigger;
+    return commands},
+  'YLinear': (state, commands) => {
+    commands.movement.linear[1] = -2 * deadzone(state.LeftStickY)
+    return commands},
+  'XAngular': (state, commands) => {
+    commands.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
+    return commands},
+  'YAngular': (state, commands) => {
+    commands.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
+    return commands},
+  'ZAngular': (state, commands) => {
+    commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
+    return commands}
+};
+
+const REQUIRES_CONTINUOUS_PULLING = {
+  'Manipulator': (state, commands) => {
+    if (state.A) commands.manipulator = 100
+    if (state.B) commands.manipulator = 0
+    if (state.LB) commands.manipulator += 1
+    if (state.RB) commands.manipulator -= 1
+    commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
+    commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
+    return commands}
+}
+
+const deadzone = (value, tol=0.2) => {
+  if(Math.abs(value) < tol) return 0;
+  return value;
+}
 
 export default class Xbox extends React.Component {
   state = {
@@ -37,6 +71,8 @@ export default class Xbox extends React.Component {
     angular: [0, 0, 0]
   }
 
+  manipulator = 100
+
   camera_index = 0;
 
   BUTTON_OPACITY = {
@@ -67,7 +103,8 @@ export default class Xbox extends React.Component {
     super();
     this.handleChange = this.handleChange.bind(this);
     this.handleAxis = this.handleAxis.bind(this);
-    console.log("hello there")
+
+    this.continuousCheck = setInterval(()=>this.handleControllerFunctions(REQUIRES_CONTINUOUS_PULLING), 20)
   }
 
   handleChange(buttonName, pressed) {
@@ -75,6 +112,10 @@ export default class Xbox extends React.Component {
     let change = {};
     change[buttonName] = pressed;
     this.setState(change);
+
+    if(pressed && buttonName == "Start") {
+      socket.emit("Arm Motors", "please");
+    }
   }
 
   getTriggerStyle(value) {
@@ -105,24 +146,18 @@ export default class Xbox extends React.Component {
     }
   }
 
-  updateVects() {
-    let temp_ang_z = 0;
-    if (this.state.LeftTrigger != 0) {
-      temp_ang_z = this.state.LeftTrigger;
-    } else if (this.state.RightTrigger != 0) {
-      temp_ang_z = -1 * this.state.RightTrigger;
+  handleControllerFunctions(functionHash) {
+    let tempCommands = {
+      movement: this.vect,
+      manipulator: this.manipulator
     }
+    for (let key in functionHash) {
+      tempCommands = functionHash[key](this.state, tempCommands);
+    }
+    this.vect = tempCommands.movement;
+    this.manipulator = tempCommands.manipulator;
 
-    this.vect = {
-      linear: [
-        this.state.LeftStickX,
-        this.state.LeftStickY,
-        this.state.RightStickY
-      ],
-      angular: [
-        0, 0, temp_ang_z
-      ]
-    }
+    this.sendCommands()
   }
 
   updateCameraIndex() {
@@ -139,10 +174,15 @@ export default class Xbox extends React.Component {
   }
 
   componentDidUpdate() {
-    this.updateVects();
+    //this.updateVects();
+    this.handleControllerFunctions(CONTROLLER_FUCTIONS);
     this.updateCameraIndex();
-    console.log('sending state');
-    socket.emit("Send State", this.vect);
+  }
+
+
+  sendCommands() {
+    socket.emit("Send Movement", this.vect);
+    socket.emit("Send Manipulator", this.manipulator);
   }
 
   render() {
