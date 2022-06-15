@@ -7,6 +7,8 @@ import IpCamera from "../components/ipCamera/IpCamera.js";
 import ScriptRunner from "../components/scriptRunner/ScriptRunner.js";
 import Xbox from "../components/xbox/Xbox.js";
 
+const socket = require("socket.io-client")("http://localhost:4040");
+
 export let getWidgetComponent = (data) => {
     switch (data.type) {
         case "settings":
@@ -16,7 +18,7 @@ export let getWidgetComponent = (data) => {
         case "ip_camera":
             return <IpCamera props={data.savedProps}/>;
         case "controller":
-            return <Xbox props={data.savedProps}/>;
+            return <Xbox props={data.savedProps} socket={socket}/>;
         case "key_controller":
             return <Controller props={data.savedProps}/>;
         case "script_runner":

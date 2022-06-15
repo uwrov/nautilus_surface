@@ -3,8 +3,8 @@ import "./Xbox.css";
 import Gamepad from "react-gamepad";
 // import Draggable from "react-draggable";
 
-const socket = require("socket.io-client")("http://localhost:4040");
 const AXIS_THROTTLE = 10;
+
 const CONTROLLER_FUCTIONS = {
   'ZLinear': (state, commands) => {
     commands.movement.linear[2] = -3 * state.LeftTrigger;
@@ -114,7 +114,7 @@ export default class Xbox extends React.Component {
     this.setState(change);
 
     if(pressed && buttonName == "Start") {
-      socket.emit("Arm Motors", "please");
+      this.props.socket.emit("Arm Motors", "please");
     }
   }
 
@@ -169,7 +169,7 @@ export default class Xbox extends React.Component {
 
       if(currIndex != this.camera_index) {
         this.camera_index = currIndex;
-        socket.emit("Set Camera", this.camera_index);
+        this.props.socket.emit("Set Camera", this.camera_index);
       }
   }
 
@@ -181,8 +181,8 @@ export default class Xbox extends React.Component {
 
 
   sendCommands() {
-    socket.emit("Send Movement", this.vect);
-    socket.emit("Send Manipulator", this.manipulator);
+    this.props.socket.emit("Send Movement", this.vect);
+    this.props.socket.emit("Send Manipulator", this.manipulator);
   }
 
   render() {
