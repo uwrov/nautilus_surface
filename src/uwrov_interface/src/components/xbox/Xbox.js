@@ -21,17 +21,13 @@ const CONTROLLER_FUCTIONS = {
     return commands},
   'ZAngular': (state, commands) => {
     commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
-    return commands}
-};
-
-const REQUIRES_CONTINUOUS_PULLING = {
+    return commands},
   'Manipulator': (state, commands) => {
-    if (state.A) commands.manipulator = 100
-    if (state.B) commands.manipulator = 0
-    if (state.LB) commands.manipulator += 1
-    if (state.RB) commands.manipulator -= 1
-    commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
-    commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
+    if (state.A) this.props.socket.emit("Set Manipulator Angle", 100);
+    if (state.B) this.props.socket.emit("Set Manipulator Angle", 0);
+    if (state.LB) this.props.socket.emit("Set Manipulator Velocity", 1);
+    else if (state.RB) this.props.socket.emit("Set Manipulator Velocity", -1);
+    else this.props.socket.emit("Stop Manipulator", "please");
     return commands}
 }
 
@@ -71,8 +67,6 @@ export default class Xbox extends React.Component {
     angular: [0, 0, 0]
   }
 
-  manipulator = 100
-
   camera_index = 0;
 
   BUTTON_OPACITY = {
@@ -103,8 +97,6 @@ export default class Xbox extends React.Component {
     super();
     this.handleChange = this.handleChange.bind(this);
     this.handleAxis = this.handleAxis.bind(this);
-
-    this.continuousCheck = setInterval(()=>this.handleControllerFunctions(REQUIRES_CONTINUOUS_PULLING), 20)
   }
 
   handleChange(buttonName, pressed) {
@@ -149,13 +141,11 @@ export default class Xbox extends React.Component {
   handleControllerFunctions(functionHash) {
     let tempCommands = {
       movement: this.vect,
-      manipulator: this.manipulator
     }
     for (let key in functionHash) {
       tempCommands = functionHash[key](this.state, tempCommands);
     }
     this.vect = tempCommands.movement;
-    this.manipulator = tempCommands.manipulator;
 
     this.sendCommands()
   }
@@ -182,7 +172,6 @@ export default class Xbox extends React.Component {
 
   sendCommands() {
     this.props.socket.emit("Send Movement", this.vect);
-    this.props.socket.emit("Send Manipulator", this.manipulator);
   }
 
   render() {
