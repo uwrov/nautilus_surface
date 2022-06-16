@@ -44,6 +44,7 @@ def send_move_state(data):
 
 @sio.on("Set Manipulator Angle")
 def send_move_state(data):
+    print("set angle")
     robot.set_mani_angle(data)
 
 
@@ -59,7 +60,6 @@ def send_move_state():
 
 @sio.on("Arm Motors")
 def arm_motors(data):
-    print("arming motors")
     robot.arm_motors()
 
 

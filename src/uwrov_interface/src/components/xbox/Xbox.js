@@ -6,6 +6,9 @@ import Gamepad from "react-gamepad";
 const AXIS_THROTTLE = 10;
 
 const CONTROLLER_FUCTIONS = {
+  'XLinear': (state, commands) => {
+    commands.movement.linear[0] = -2 * deadzone(state.LeftStickX)
+    return commands},
   'ZLinear': (state, commands) => {
     commands.movement.linear[2] = -3 * state.LeftTrigger;
     if (state.RightTrigger != 0) commands.movement.linear[2] = 2 * state.RightTrigger;
@@ -14,20 +17,23 @@ const CONTROLLER_FUCTIONS = {
     commands.movement.linear[1] = -2 * deadzone(state.LeftStickY)
     return commands},
   'XAngular': (state, commands) => {
-    commands.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
+    commands.movement.angular[0] = -0.3 * deadzone(state.RightStickY)
     return commands},
   'YAngular': (state, commands) => {
-    commands.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
+    if (state.DPadLeft) commands.movement.angular[1]= 0.1;
+    else if (state.DPadRight) commands.movement.angular[1] = -0.1;
+    else commands.movement.angular[1] = 0;
     return commands},
   'ZAngular': (state, commands) => {
-    commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
+    commands.movement.angular[2] = -0.3 * deadzone(state.RightStickX)
     return commands},
-  'Manipulator': (state, commands) => {
-    if (state.A) this.props.socket.emit("Set Manipulator Angle", 100);
-    if (state.B) this.props.socket.emit("Set Manipulator Angle", 0);
-    if (state.LB) this.props.socket.emit("Set Manipulator Velocity", 1);
-    else if (state.RB) this.props.socket.emit("Set Manipulator Velocity", -1);
-    else this.props.socket.emit("Stop Manipulator", "please");
+  'Manipulator': (state, commands, socket) => {
+    if (state.A) socket.emit("Set Manipulator Angle", 100);
+    if (state.B) socket.emit("Set Manipulator Angle", 0);
+    //if (state.LB) socket.emit("Set Manipulator Velocity", 1);
+    //else if (state.RB) socket.emit("Set Manipulator Velocity", -1);
+    //else socket.emit("Stop Manipulator");
+    //console.log("pain" + state.A)
     return commands}
 }
 
@@ -100,7 +106,6 @@ export default class Xbox extends React.Component {
   }
 
   handleChange(buttonName, pressed) {
-    console.log(buttonName)
     let change = {};
     change[buttonName] = pressed;
     this.setState(change);
@@ -131,7 +136,6 @@ export default class Xbox extends React.Component {
   handleAxis(axisName, value, previousValue) {
     let rounded = Math.round(value * AXIS_THROTTLE) / AXIS_THROTTLE
     if(Math.abs(this.state[axisName] - rounded) > 0) {
-      console.log(axisName + ", " + rounded);
       let change = {};
       change[axisName] = rounded;
       this.setState(change);
@@ -143,7 +147,7 @@ export default class Xbox extends React.Component {
       movement: this.vect,
     }
     for (let key in functionHash) {
-      tempCommands = functionHash[key](this.state, tempCommands);
+      tempCommands = functionHash[key](this.state, tempCommands, this.props.socket);
     }
     this.vect = tempCommands.movement;
 

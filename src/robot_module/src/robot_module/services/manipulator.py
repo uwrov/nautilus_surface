@@ -4,6 +4,7 @@
 
 
 import rospy
+import time
 import threading
 from .service import Service
 
@@ -40,22 +41,25 @@ class Manipulator(Service):
         self.publish()
 
     def set_velocity(self, vel):
-        self.stop_moving()
+        if vel != self.msg.data: self.stop_moving()
         self.running = True
         self.thread = threading.Thread(target=self.run, args=(lambda : self.running, ))
-        self.start()
+        self.thread.start()
 
     def stop_moving(self):
+        print("trying to stop")
         if self.thread is not None:
             self.running = False
             self.thread.join()
             self.thread = None
+            print("stop")
 
     def run(self, is_running):
         while is_running:
             self.msg.data += self.velocity
             self.publish()
-            thread.sleep(0.05)
+            print("updating")
+            time.sleep(0.05)
 
 
     def _throttle(self):
@@ -65,4 +69,5 @@ class Manipulator(Service):
 
     def publish(self):
         self._throttle()
+        print("publishing")
         self.mani_pub.publish(self.msg)
