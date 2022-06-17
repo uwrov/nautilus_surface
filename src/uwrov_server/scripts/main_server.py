@@ -31,8 +31,11 @@ publishers = {
 
 @sio.on("Get IDs")
 def send_image_id():
-    #sio.emit("IDs", {'ids': image_handles}, broadcast=True)
-    pass
+    sio.emit("IDs", {'ids': robot.get_image_topics()}, broadcast=True)
+
+
+def send_image(image, topic):
+    sio.emit("Image Display", {"id": topic, "image": image}, broadcast=True)
 
 
 @sio.on("Send Movement")
@@ -61,8 +64,11 @@ def shutdown_server(signum, frame):
 if __name__ == '__main__':
     """ Sets up rospy and starts servers """
     robot = RobotModule("surface")
+    robot.setup("images")
     robot.setup("movement")
     robot.setup("manipulator")
+
+    robot.add_image_listener(send_image)
 
     # Define a way to exit gracefully
     signal.signal(signal.SIGINT, shutdown_server)

@@ -42,7 +42,7 @@ class RobotModule:
         """
         try:
             if service in self.active_services:
-                func()
+                 return func()
             else:
                 print(f"[ERROR]: {service} not active yet")
         except Exception as e:
@@ -148,18 +148,29 @@ class RobotModule:
         # TODO: Implement
         pass
 
+    def get_image_topics(self):
+        return self.__run_if_service("images",
+                    lambda: self.active_services["images"]
+                        .get_image_topics()
+                    )
 
-    def get_image(self, index=0):
+    def get_image(self, topic):
         """
         Returns the current camera image available from the robot.
         :param int: index of the image
         """
-        # TODO: Implement
-        pass
+        return self.__run_if_service("images",
+                            lambda: self.active_services["images"]
+                                .get_image(topic)
+                            )
 
 
-    def add_image_listener(self, listener, index=0):
+    def add_image_listener(self, listener):
         """
-        Ret
+        add a callback function for the image stream. Listener is called on update
+        of the image.
         """
-        pass
+        self.__run_if_service("images",
+                            lambda: self.active_services["images"]
+                                .callbacks.append(listener)
+                            )

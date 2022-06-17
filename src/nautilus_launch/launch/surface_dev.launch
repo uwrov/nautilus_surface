@@ -4,5 +4,6 @@
     <node name="interface" pkg="uwrov_interface" type="launch_interface.bash"/>
 
     <node name="motors" pkg="nautilus_motors" type="pwm_publisher.py" output="screen"/>
+    <node name="cameras" pkg="uwrov_cameras" type="stream_topic_relay.py" output="screen"/>
   </group>
 </launch>
