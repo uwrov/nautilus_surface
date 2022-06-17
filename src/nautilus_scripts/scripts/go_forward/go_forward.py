@@ -5,6 +5,7 @@ import time
 
 robot = None
 
+
 def go_forward():
     for i in range(10):
         robot.set_vel([0, -0.1, 0], [0, 0, 0])
@@ -22,7 +23,7 @@ def go_forward():
 def main():
     """ Setup RobotModule """
     robot = RobotModule("surface")
-    robot.setup("movement")
+        robot.setup("movement")
 
 if __name__ == '__main__':
     main()
