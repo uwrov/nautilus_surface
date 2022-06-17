@@ -21,7 +21,7 @@ Second_Auto_Script -> Second_Auto_Script : Periodically ping\nto try and get loc
 ...
 
 auto -> ls : Send lock release message
-return : Acknowledge lock release (no need to wait)
-auto -> ui : Send enable message over topic
+return Acknowledge lock release (no need to wait)
+ls -> ui : Send enable message over topic
 
 @enduml
