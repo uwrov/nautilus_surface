@@ -3,7 +3,14 @@ from robot_module import RobotModule
 import random
 import time
 
+<<<<<<< HEAD
 def go_forward(robot):
+=======
+robot = None
+
+
+def go_forward():
+>>>>>>> 2ee331c5f45a8d421df5f9bbb80003aeaac865a8
     for i in range(10):
         robot.set_vel([0, -0.5, 0], [0, 0, 0])
         time.sleep(2)
@@ -20,7 +27,7 @@ def go_forward(robot):
 def main():
     """ Setup RobotModule """
     robot = RobotModule("surface")
-    robot.setup("movement")
+        robot.setup("movement")
 
     go_forward(robot)
 
