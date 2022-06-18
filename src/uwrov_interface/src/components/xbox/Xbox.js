@@ -20,8 +20,8 @@ const CONTROLLER_FUCTIONS = {
     commands.movement.angular[0] = -0.3 * deadzone(state.RightStickY)
     return commands},
   'YAngular': (state, commands) => {
-    if (state.DPadLeft) commands.movement.angular[1]= 0.1;
-    else if (state.DPadRight) commands.movement.angular[1] = -0.1;
+    if (state.LB) commands.movement.angular[1]= 0.1;
+    else if (state.RB) commands.movement.angular[1] = -0.1;
     else commands.movement.angular[1] = 0;
     return commands},
   'ZAngular': (state, commands) => {
