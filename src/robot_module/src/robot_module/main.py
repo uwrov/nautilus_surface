@@ -63,7 +63,8 @@ class RobotModule:
                             )
 
 
-    def set_angle(self, percentage):
+    # Manipulator API
+    def set_mani_angle(self, percentage):
         """
         Sets the percentage of how open the manipulator is open
         100 being maximum and 0 being minimum
@@ -74,6 +75,25 @@ class RobotModule:
                                 .set_angle(percentage)
                             )
 
+    def set_mani_vel(self, velocity):
+        """
+        Sets the velocity of the manipulator.
+        Positive is opening, negative is closing
+        :param percentage: float speed of displacement (in percentage)
+        """
+        self.__run_if_service("manipulator",
+                            lambda: self.active_services["manipulator"]
+                                .set_velocity(velocity)
+                            )
+
+    def stop_mani(self):
+        """
+        Stops the manipulator movement
+        """
+        self.__run_if_service("manipulator",
+                            lambda: self.active_services["manipulator"]
+                                .stop_moving()
+                            )
 
     # Robot motor API
     def set_vel(self, linear, angular=[0, 0, 0]):

@@ -6,6 +6,9 @@ import Gamepad from "react-gamepad";
 const AXIS_THROTTLE = 10;
 
 const CONTROLLER_FUCTIONS = {
+  'XLinear': (state, commands) => {
+    commands.movement.linear[0] = -2 * deadzone(state.LeftStickX)
+    return commands},
   'ZLinear': (state, commands) => {
     commands.movement.linear[2] = -3 * state.LeftTrigger;
     if (state.RightTrigger != 0) commands.movement.linear[2] = 2 * state.RightTrigger;
@@ -14,24 +17,23 @@ const CONTROLLER_FUCTIONS = {
     commands.movement.linear[1] = -2 * deadzone(state.LeftStickY)
     return commands},
   'XAngular': (state, commands) => {
-    commands.movement.angular[0] = 0.3 * deadzone(state.RightStickY)
+    commands.movement.angular[0] = -0.3 * deadzone(state.RightStickY)
     return commands},
   'YAngular': (state, commands) => {
-    commands.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
+    if (state.DPadLeft) commands.movement.angular[1]= 0.1;
+    else if (state.DPadRight) commands.movement.angular[1] = -0.1;
+    else commands.movement.angular[1] = 0;
     return commands},
   'ZAngular': (state, commands) => {
-    commands.movement.angular[2] =  0.3 * deadzone(state.LeftStickX)
-    return commands}
-};
-
-const REQUIRES_CONTINUOUS_PULLING = {
-  'Manipulator': (state, commands) => {
-    if (state.A) commands.manipulator = 100
-    if (state.B) commands.manipulator = 0
-    if (state.LB) commands.manipulator += 1
-    if (state.RB) commands.manipulator -= 1
-    commands.manipulator = (commands.manipulator < 0) ? 0 : commands.manipulator
-    commands.manipulator = (commands.manipulator > 100) ? 100 : commands.manipulator
+    commands.movement.angular[2] = -0.3 * deadzone(state.RightStickX)
+    return commands},
+  'Manipulator': (state, commands, socket) => {
+    if (state.A) socket.emit("Set Manipulator Angle", 100);
+    if (state.B) socket.emit("Set Manipulator Angle", 0);
+    //if (state.LB) socket.emit("Set Manipulator Velocity", 1);
+    //else if (state.RB) socket.emit("Set Manipulator Velocity", -1);
+    //else socket.emit("Stop Manipulator");
+    //console.log("pain" + state.A)
     return commands}
 }
 
@@ -71,8 +73,6 @@ export default class Xbox extends React.Component {
     angular: [0, 0, 0]
   }
 
-  manipulator = 100
-
   camera_index = 0;
 
   BUTTON_OPACITY = {
@@ -103,12 +103,9 @@ export default class Xbox extends React.Component {
     super();
     this.handleChange = this.handleChange.bind(this);
     this.handleAxis = this.handleAxis.bind(this);
-
-    this.continuousCheck = setInterval(()=>this.handleControllerFunctions(REQUIRES_CONTINUOUS_PULLING), 20)
   }
 
   handleChange(buttonName, pressed) {
-    console.log(buttonName)
     let change = {};
     change[buttonName] = pressed;
     this.setState(change);
@@ -139,7 +136,6 @@ export default class Xbox extends React.Component {
   handleAxis(axisName, value, previousValue) {
     let rounded = Math.round(value * AXIS_THROTTLE) / AXIS_THROTTLE
     if(Math.abs(this.state[axisName] - rounded) > 0) {
-      console.log(axisName + ", " + rounded);
       let change = {};
       change[axisName] = rounded;
       this.setState(change);
@@ -149,13 +145,11 @@ export default class Xbox extends React.Component {
   handleControllerFunctions(functionHash) {
     let tempCommands = {
       movement: this.vect,
-      manipulator: this.manipulator
     }
     for (let key in functionHash) {
-      tempCommands = functionHash[key](this.state, tempCommands);
+      tempCommands = functionHash[key](this.state, tempCommands, this.props.socket);
     }
     this.vect = tempCommands.movement;
-    this.manipulator = tempCommands.manipulator;
 
     this.sendCommands()
   }
@@ -182,7 +176,6 @@ export default class Xbox extends React.Component {
 
   sendCommands() {
     this.props.socket.emit("Send Movement", this.vect);
-    this.props.socket.emit("Send Manipulator", this.manipulator);
   }
 
   render() {

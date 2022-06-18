@@ -42,14 +42,24 @@ def send_move_state(data):
     #publishers['move_h'].pub.update_state(data)
 
 
-@sio.on("Send Manipulator")
+@sio.on("Set Manipulator Angle")
 def send_move_state(data):
-    robot.set_angle(data)
+    print("set angle")
+    robot.set_mani_angle(data)
+
+
+@sio.on("Set Manipulator Velocity")
+def send_move_state(data):
+    robot.set_mani_vel(data)
+
+
+@sio.on("Stop Manipulator")
+def send_move_state():
+    robot.stop_mani()
 
 
 @sio.on("Arm Motors")
 def arm_motors(data):
-    print("arming motors")
     robot.arm_motors()
 
 
