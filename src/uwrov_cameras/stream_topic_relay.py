@@ -10,10 +10,11 @@ def main():
   K=np.array([[232.59834329560857, 0.0, 323.69056666007043], [0.0, 224.2212045670311, 249.45648108995732], [0.0, 0.0, 1.0]])
   D=np.array([[-0.030436347449448193], [0.009118483708036189], [-0.03442166148483811], [0.014312258830753885]])
 
-  ips_to_topics = {'192.168.0.99:8081' : '/rov_camera/front',
-                   '192.168.0.99:8082' : '/rov_camera/down',
-                   '192.168.0.99:8083' : '/rov_camera/left',
-                   '192.168.0.99:8084' : '/rov_camera/right'}
+  ips_to_topics = {'http://192.168.0.99:8081' : '/rov_camera/front',
+                   'http://192.168.0.99:8082' : '/rov_camera/down',
+                   #'http://192.168.0.99:8083' : '/rov_camera/left',
+                   #'http://192.168.0.99:8084' : '/rov_camera/right'
+                   }
 
   rospy.init_node('motion')
   pairs = {}
@@ -24,7 +25,7 @@ def main():
     stream = cv2.VideoCapture(ip)
     publisher = rospy.Publisher(ips_to_topics[ip], CompressedImage, queue_size=1)
     if (ips_to_topics[ip] == '/rov_camera/front'):
-      pairs[stream] = (publisher, True)
+      pairs[stream] = (publisher, False)
     else:
       pairs[stream] = (publisher, False)
 
@@ -45,6 +46,7 @@ def main():
           if ret:
             pairs[stream][0].publish(msg)
       except Exception as e:
+          print(e)
           pass
     rate.sleep()
 
