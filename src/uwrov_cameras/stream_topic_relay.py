@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import picamera
 import rospy
 import os
 from sensor_msgs.msg import CompressedImage
@@ -20,7 +19,7 @@ def main():
   pairs = {}
   rospy.on_shutdown(shutdown_fn, [pairs])
   rate = rospy.Rate(60) # framerate - consider lowering
-  
+
   for ip in ips_to_topics:
     stream = cv2.VideoCapture(ip)
     publisher = rospy.Publisher(ips_to_topics[ip], CompressedImage, queue_size=1)
@@ -34,7 +33,7 @@ def main():
   while not rospy.is_shutdown():
     for stream in pairs:
       ret, frame = stream.read()
-      if pairs[stream][1]: 
+      if pairs[stream][1]:
         h,w = frame.shape[:2]
         map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), K, DIM, cv2.CV_16SC2)
         undistorted_img = cv2.remap(frame, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
