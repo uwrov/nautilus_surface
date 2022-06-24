@@ -38,5 +38,11 @@ export const NavbarItems = [
 		dropdown: false,
 		defaultWidget: '',
 		cName: 'navButton'
+	},
+	{
+		title: 'Float',
+		dropdown: false,
+		defaultWidget: '',
+		cName: 'navButton'
 	}
 ]

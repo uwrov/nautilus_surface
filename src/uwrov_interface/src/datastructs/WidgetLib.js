@@ -6,6 +6,7 @@ import RosCamera from "../components/rosCamera/RosCamera.js";
 import IpCamera from "../components/ipCamera/IpCamera.js";
 import ScriptRunner from "../components/scriptRunner/ScriptRunner.js";
 import Xbox from "../components/xbox/Xbox.js";
+import Float from "../components/floatResurface/Float.js";
 
 const socket = require("socket.io-client")("http://localhost:4040");
 
@@ -23,6 +24,8 @@ export let getWidgetComponent = (data) => {
             return <Controller props={data.savedProps}/>;
         case "script_runner":
             return <ScriptRunner props={data.savedProps}/>;
+        case "float":
+            return <Float props={data.savedProps}/>;
     }
 };
 

@@ -55,6 +55,12 @@ class GUI extends React.Component {
           widgets: widgets,
         });
         break;
+      case "Float":
+        widgets.push(new Widget("float"));
+        this.setState({
+          widgets: widgets,
+        });
+        break;
     }
   };
 
