@@ -36,6 +36,7 @@ class RobotImages(Service):
         pass
 
     def _handle_callbacks(self, image, topic):
+        image = image.data				# A bad thing but quick fix
         self._update_image(image, topic)
         for func in self.callbacks:
             try:

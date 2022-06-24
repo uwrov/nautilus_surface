@@ -127,9 +127,24 @@ export default class Camera extends React.Component {
 
 let decodeImageToURL = (image) => {
   let typed_array = new Uint8Array(image);
+  //console.log(typed_array)
   //const data = typed_array.reduce((acc, i) => acc += String.fromCharCode.apply(null, [i]), '');
-  const data = btoa(String.fromCharCode.apply(null, typed_array));
+  //const data = btoa(adata);//String.fromCharCode.apply(null, adata));
+  const data = uint8ToBase64(typed_array);
   let imageurl = "data:image/png;base64, " + data;
-  console.log(imageurl);
-  return imageurl;
+  console.log(URL.createObjectURL(
+    new Blob([typed_array.buffer], { type: 'image/png' } /* (1) */)
+  ));
+  return URL.createObjectURL(
+    new Blob([typed_array.buffer], { type: 'image/png' } /* (1) */)
+  );
 };
+
+// StackOverflow
+const uint8ToBase64 = (arr) =>
+    btoa(
+        Array(arr.length)
+            .fill('')
+            .map((_, i) => String.fromCharCode(arr[i]))
+            .join('')
+    );
