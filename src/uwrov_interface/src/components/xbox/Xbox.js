@@ -7,7 +7,7 @@ const AXIS_THROTTLE = 10;
 
 const CONTROLLER_FUCTIONS = {
   'XLinear': (state, commands) => {
-    commands.movement.linear[0] = -2 * deadzone(state.LeftStickX)
+    commands.movement.angular[2] = -0.3 * deadzone(state.LeftStickX)
     return commands},
   'ZLinear': (state, commands) => {
     commands.movement.linear[2] = -3 * state.LeftTrigger;
@@ -25,7 +25,7 @@ const CONTROLLER_FUCTIONS = {
     else commands.movement.angular[1] = 0;
     return commands},
   'ZAngular': (state, commands) => {
-    commands.movement.angular[2] = -0.3 * deadzone(state.RightStickX)
+    commands.movement.angular[1] = 0.3 * deadzone(state.RightStickX)
     return commands},
   'Manipulator': (state, commands, socket) => {
     if (state.A) socket.emit("Set Manipulator Angle", 100);
